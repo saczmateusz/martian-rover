@@ -1,4 +1,6 @@
 #pragma once
+#include "../../definitions.h"
+
 class Frame
 {
 public:

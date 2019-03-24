@@ -28,6 +28,9 @@
     <ClInclude Include="Parts\Chassis\Frame\Frame.h">
       <Filter>Parts\Chassis\Frame</Filter>
     </ClInclude>
+    <ClInclude Include="Parts\Chassis\Axle\Axle.h">
+      <Filter>Parts\Chassis\Axle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd">
@@ -65,6 +68,9 @@
     <Filter Include="Parts\Chassis\Frame">
       <UniqueIdentifier>{9a7066b2-9887-4e67-9968-33a1369ca864}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Parts\Chassis\Axle">
+      <UniqueIdentifier>{c1fd59a0-1cc6-4ab5-aee2-287e71a949c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source.cpp">
@@ -90,6 +96,9 @@
     </ClCompile>
     <ClCompile Include="Parts\Chassis\Frame\Frame.cpp">
       <Filter>Parts\Chassis\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="Parts\Chassis\Axle\Axle.cpp">
+      <Filter>Parts\Chassis\Axle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

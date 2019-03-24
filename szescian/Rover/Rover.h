@@ -3,6 +3,8 @@
 #include "../Parts/Wheel/Wheel.h"
 #include "../Parts/Platform/Platform.h"
 #include "../Parts/Chassis/Chassis.h"
+#include "../Parts/Chassis/Frame/Frame.h"
+#include "../Parts/Chassis/Axle/Axle.h"
 #include "../Parts/Arm/Arm.h"
 
 class Rover
@@ -19,5 +21,13 @@ private:
 	Wheel kolo4;
 	Wheel kolo5;
 	Wheel kolo6;
+	Frame frame;
+	Axle axle1;
+	Axle axle2;
+	Axle axle3;
+	Axle axle4;
+	Axle axle5;
+	Axle axle6;
+
 };
 
