@@ -333,9 +333,8 @@ void RenderScene(void)
 	//walec(40, 40);
 	//szescian();
 	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	Rover rover(0, 0, 0);
-	Rover rover2(50, 0, 0);
-	
+	Rover rover(0, 20, 20);
+
 	//nadwozie(20, -25, -25);
 	//Uzyskanie siatki:
 

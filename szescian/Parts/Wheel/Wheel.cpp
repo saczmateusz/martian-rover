@@ -25,7 +25,7 @@ Wheel::Wheel(float xs, float ys, float zs, float r)
 	glEnd();
 
 
-	zs += 12;
+	zs += 10;
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(0.5f, 0.5f, 0.5f);
 	glVertex3f(xs, ys, zs - 3);
@@ -54,7 +54,7 @@ Wheel::Wheel(float xs, float ys, float zs, float r)
 
 		glVertex3f(x, y, z);
 
-		z -= 12;
+		z -= 10;
 		glVertex3f(x, y, z);
 
 		angle += GLfloat(GL_PI / 10);

@@ -149,10 +149,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Source.cpp" />
-    <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="Platform.cpp" />
-    <ClCompile Include="Rover.cpp" />
-    <ClCompile Include="Wheel.cpp" />
+    <ClCompile Include="Grid\Grid.cpp" />
+    <ClCompile Include="Parts\Arm\Arm.cpp" />
+    <ClCompile Include="Parts\Chassis\Chassis.cpp" />
+    <ClCompile Include="Parts\Chassis\Frame\Frame.cpp" />
+    <ClCompile Include="Parts\Platform\Platform.cpp" />
+    <ClCompile Include="Parts\Wheel\Wheel.cpp" />
+    <ClCompile Include="Rover\Rover.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS" />
@@ -161,10 +164,13 @@
   <ItemGroup>
     <ClInclude Include="..\RESOURCE.H" />
     <ClInclude Include="definitions.h" />
-    <ClInclude Include="Grid.h" />
-    <ClInclude Include="Platform.h" />
-    <ClInclude Include="Rover.h" />
-    <ClInclude Include="Wheel.h" />
+    <ClInclude Include="Grid\Grid.h" />
+    <ClInclude Include="Parts\Arm\Arm.h" />
+    <ClInclude Include="Parts\Chassis\Chassis.h" />
+    <ClInclude Include="Parts\Chassis\Frame\Frame.h" />
+    <ClInclude Include="Parts\Platform\Platform.h" />
+    <ClInclude Include="Parts\Wheel\Wheel.h" />
+    <ClInclude Include="Rover\Rover.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
