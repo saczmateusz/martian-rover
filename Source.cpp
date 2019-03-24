@@ -1,41 +1,6 @@
-// Gl_template.c
-//Wy³šczanie b³êdów przed "fopen"
-#define  _CRT_SECURE_NO_WARNINGS
+#include "szescian/definitions.h"
+#include "szescian/Rover.h"
 
-
-
-// £adowanie bibliotek:
-
-#ifdef _MSC_VER                         // Check if MS Visual C compiler
-#  pragma comment(lib, "opengl32.lib")  // Compiler-specific directive to avoid manually configuration
-#  pragma comment(lib, "glu32.lib")     // Link libraries
-#endif
-
-
-
-
-// Ustalanie trybu tekstowego:
-#ifdef _MSC_VER        // Check if MS Visual C compiler
-#   ifndef _MBCS
-#      define _MBCS    // Uses Multi-byte character set
-#   endif
-#   ifdef _UNICODE     // Not using Unicode character set
-#      undef _UNICODE 
-#   endif
-#   ifdef UNICODE
-#      undef UNICODE 
-#   endif
-#endif
-#include <windows.h>            // Window defines
-#include <gl\gl.h>              // OpenGL
-#include <gl\glu.h>             // GLU library
-#include <math.h>				// Define for sqrt
-#include <stdio.h>
-#include "resource.h"           // About box resource identifiers.
-
-#define glRGB(x, y, z)	glColor3ub((GLubyte)x, (GLubyte)y, (GLubyte)z)
-#define BITMAP_ID 0x4D42		// identyfikator formatu BMP
-#define GL_PI 3.14
 
 // Color Palette handle
 HPALETTE hPalette = NULL;
@@ -207,61 +172,6 @@ void SetupRC()
 	glColor3f(0.0,0.0,0.0);
 	}
 
-void skrzynka(void)
-{
-	glColor3d(0.8,0.7,0.3);
-	
-	
-	glEnable(GL_TEXTURE_2D); // W³¹cz teksturowanie
-
-	glBindTexture(GL_TEXTURE_2D,texture[0]);
-	glBegin(GL_QUADS);
-		glNormal3d(0,0,1);
-		glTexCoord2d(1.0,1.0); glVertex3d(25,25,25);
-		glTexCoord2d(0.0,1.0); glVertex3d(-25,25,25);
-		glTexCoord2d(0.0,0.0); glVertex3d(-25,-25,25);
-		glTexCoord2d(1.0,0.0); glVertex3d(25,-25,25);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D,texture[1]);
-	glBegin(GL_QUADS);
-		glNormal3d(1,0,0);
-		glTexCoord2d(1.0,1.0); glVertex3d(25,25,25);
-		glTexCoord2d(0.0,1.0); glVertex3d(25,-25,25);
-		glTexCoord2d(0.0,0.0); glVertex3d(25,-25,-25);
-		glTexCoord2d(1.0,0.0); glVertex3d(25,25,-25);
-	glEnd();
-
-	glDisable(GL_TEXTURE_2D); // Wy³¹cz teksturowanie
-
-
-
-	glBegin(GL_QUADS);
-		glNormal3d(0,0,-1);
-		glVertex3d(25,25,-25);
-		glVertex3d(25,-25,-25);
-		glVertex3d(-25,-25,-25);
-		glVertex3d(-25,25,-25);
-
-		glNormal3d(-1,0,0);
-		glVertex3d(-25,25,-25);
-		glVertex3d(-25,-25,-25);
-		glVertex3d(-25,-25,25);
-		glVertex3d(-25,25,25);
-
-		glNormal3d(0,1,0);
-		glVertex3d(25,25,25);
-		glVertex3d(25,25,-25);
-		glVertex3d(-25,25,-25);
-		glVertex3d(-25,25,25);
-
-		glNormal3d(0,-1,0);
-		glVertex3d(25,-25,25);
-		glVertex3d(-25,-25,25);
-		glVertex3d(-25,-25,-25);
-		glVertex3d(25,-25,-25);
-	glEnd();
-}
-
 void walec01(void)
 {
 GLUquadricObj*obj;
@@ -275,76 +185,6 @@ glTranslated(0,0,60);
 glRotated(180.0,0,1,0);
 gluCylinder(obj,0,20,30,15,7);
 glPopMatrix();
-}
-
-void kula(void)
-{	GLUquadricObj*obj;
-	obj=gluNewQuadric();
-	gluQuadricTexture(obj,GL_TRUE);
-	glBindTexture(GL_TEXTURE_2D,texture[0]);
-	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-	glColor3d(1.0,0.8,0.8);
-	glEnable(GL_TEXTURE_2D);
-	gluSphere(obj,40,15,7);
-	glDisable(GL_TEXTURE_2D);
-}
-
-void kolo(float xs, float ys, float zs, float r)
-{
-	GLfloat angle = 0;
-	GLfloat x, y, z;
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.5f, 0.5f, 0.5f);
-	glVertex3f(xs, ys, zs);
-	z = zs + 3;
-	do
-	{
-		x = GLfloat(xs + r*sin(angle));
-		y = GLfloat(ys + r*cos(angle));
-
-		glVertex3f(x, y, z);
-
-
-		angle += GLfloat(GL_PI / 20);
-	} while (angle <= 2 * GL_PI);
-	glEnd();
-
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.5f, 0.5f, 0.5f);
-	glVertex3f(xs, ys, zs - 5);
-	angle = 0;
-	z = zs - 8;
-	do
-	{
-		x = GLfloat(xs + r*sin(angle));
-		y = GLfloat(ys + r*cos(angle));
-
-		glVertex3f(x, y, z);
-
-
-		angle += GLfloat(GL_PI / 20);
-	} while (angle <= 2 * GL_PI);
-	glEnd();
-
-	glBegin(GL_TRIANGLE_STRIP);
-	glColor3f(0.3f, 0.3f, 0.3f);
-	angle = 0;
-	do
-	{
-		z = zs + 3;
-		x = GLfloat(xs + r*sin(angle));
-		y = GLfloat(ys + r*cos(angle));
-
-		glVertex3f(x, y, z);
-
-		z -= 11;
-		glVertex3f(x, y, z);
-
-		angle += GLfloat(GL_PI / 20);
-	} while (angle <= 2 * GL_PI);
-	glEnd();
-
-
 }
 
 void nadwozie(float xs, float ys, float zs)
@@ -434,72 +274,6 @@ unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader
 	fclose(filePtr);
 	return bitmapImage;
 }
-void szescian(void)
-{
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	{
-		// Parametry wierzcholkow
-
-		GLfloat sa[3] = { 0.0f,0.0f,0.0f };
-		GLfloat sb[3] = { 10.0f,0.0f,0.0f };
-		GLfloat sc[3] = { 10.0f,10.0f,0.0f };
-		GLfloat sd[3] = { 0.0f,10.0f,0.0f };
-		GLfloat se[3] = { 0.0f,0.0f,-10.0f };
-		GLfloat sf[3] = { 10.0f,0.0f,-10.0f };
-		GLfloat sg[3] = { 10.0f,10.0f,-10.0f };
-		GLfloat sh[3] = { 0.0f,10.0f,-10.0f };
-
-
-		// Sciany skladowe
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sc);
-		glVertex3fv(sd);
-		glEnd();
-
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(sg);
-		glVertex3fv(sc);
-		glEnd();
-
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-		glVertex3fv(sh);
-		glVertex3fv(sg);
-		glEnd();
-
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(se);
-		glVertex3fv(sa);
-		glVertex3fv(sd);
-		glVertex3fv(sh);
-		glEnd();
-
-		glColor3f(0.0f, 1.0f, 1.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(sd);
-		glVertex3fv(sc);
-		glVertex3fv(sg);
-		glVertex3fv(sh);
-		glEnd();
-
-		glColor3f(1.0f, 0.0f, 1.0f);
-		glBegin(GL_POLYGON);
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-		glEnd();
-	}
-}
 
 void walec(double r, double h)
 {
@@ -535,74 +309,8 @@ void walec(double r, double h)
 	}
 	glEnd();
 }
-void ramie(double r1, double r2, double h, double d)
-{
-	double PI = 3.14, alpha, x, y;
-	glBegin(GL_TRIANGLE_FAN);
-		glColor3d(0.8, 0.0, 0);
-		glVertex3d(0, 0, 0);
-		for (alpha = PI; alpha <= 2 * PI; alpha += PI / 8.0)
-		{
-			x = r1*sin(alpha);
-			y = r1*cos(alpha);
-			glVertex3d(x, y, 0);
-		}
-	glEnd();
-
-	glBegin(GL_QUAD_STRIP);
-		for (alpha = 0; alpha >= -PI; alpha -= PI / 8.0)
-		{
-			x = r1*sin(alpha);
-			y = r1* cos(alpha);
-			glVertex3d(x, y, h);
-			glVertex3d(x, y, 0);
-		}
-	glEnd();
-
-	glBegin(GL_TRIANGLE_FAN);
-		glVertex3d(0, 0, h);
-		for (alpha = 0; alpha >= -PI; alpha -= PI / 8.0)
-		{
-			x = r1*sin(alpha);
-			y = r1*cos(alpha);
-			glVertex3d(x, y, h);
-		}
-	glEnd();
-
-	glBegin(GL_TRIANGLE_FAN);
-		glColor3d(0.8, 0.0, 0);
-		//glVertex3d(d,r2,0);
-		//glVertex3d(d, r2, h);
-		for (alpha = 0; alpha <= PI; alpha += PI / 8.0)
-		{
-			x = d + r2 * sin(alpha);
-			y = d + r2 * cos(alpha);
-			glVertex3d(x, y, 0);
-		}
-	glEnd();
-
-	glBegin(GL_QUAD_STRIP);
-		//glVertex3d(d, r2, 0);
-		for (alpha = 0; alpha <= PI; alpha += PI / 8.0)
-		{
-			x = d+ r2*sin(alpha);
-			y = d +r2* cos(alpha);
-			glVertex3d(x, y, h);
-			glVertex3d(x, y, 0);
-		}
-	glEnd();
-
-	glBegin(GL_TRIANGLE_FAN);
-		//glVertex3d(d, r2, h);
-		for (alpha = 0; alpha <= PI; alpha += PI / 8.0)
-		{
-			x = d +r2*sin(alpha);
-			y = d +r2*cos(alpha);
-			glVertex3d(x, y, h);
-		}
-	glEnd();
-}
 // Called to draw scene
+
 void RenderScene(void)
 	{
 	//float normal[3];	// Storeage for calculated surface normal
@@ -625,14 +333,10 @@ void RenderScene(void)
 	//walec(40, 40);
 	//szescian();
 	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	kolo(0, 0, 0, 10);
-	kolo(0, 30, 0, 10);
-	kolo(0, 60, 0, 10);
-	kolo(0, 0, 50, 10);
-	kolo(0, 30, 50, 10);
-	kolo(0, 60, 50, 10);
-	nadwozie(20, -25, -25);
-
+	Rover rover(0, 0, 0);
+	Rover rover2(50, 0, 0);
+	
+	//nadwozie(20, -25, -25);
 	//Uzyskanie siatki:
 
 	//Wyrysowanie prostokata:
