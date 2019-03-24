@@ -1,6 +1,9 @@
 #pragma once
-#include "Grid.h"
-#include "Wheel.h"
+#include "../Grid/Grid.h"
+#include "../Parts/Wheel/Wheel.h"
+#include "../Parts/Platform/Platform.h"
+#include "../Parts/Chassis/Chassis.h"
+#include "../Parts/Arm/Arm.h"
 
 class Rover
 {
