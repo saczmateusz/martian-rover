@@ -14,7 +14,7 @@ Axle::Axle(float xs, float ys, float zs, char side)
 
 		glVertex3f(x, y, z);
 
-		z -= 23 * side;
+		z -= 18 * side;
 		x += 15;
 		glVertex3f(x, y, z);
 

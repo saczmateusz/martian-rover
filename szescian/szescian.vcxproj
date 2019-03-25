@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Source.cpp" />
+    <ClCompile Include="Cuboid\Cuboid.cpp" />
     <ClCompile Include="Grid\Grid.cpp" />
     <ClCompile Include="Parts\Arm\Arm.cpp" />
     <ClCompile Include="Parts\Chassis\Axle\Axle.cpp" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RESOURCE.H" />
+    <ClInclude Include="Cuboid\Cuboid.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="Grid\Grid.h" />
     <ClInclude Include="Parts\Arm\Arm.h" />

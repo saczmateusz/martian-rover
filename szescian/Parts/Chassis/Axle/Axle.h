@@ -8,6 +8,6 @@ public:
 	~Axle();
 
 private:
-	GLfloat angle = 0, x, y, z, r = 3;
+	GLfloat angle = 0, x, y, z, r = 2;
 };
 
