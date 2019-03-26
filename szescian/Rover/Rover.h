@@ -1,6 +1,5 @@
 #pragma once
-#include "../Grid/Grid.h"
-#include "../Parts/Wheel/Wheel.h"
+#include "../Cylinder/Cylinder.h"
 #include "../Parts/Platform/Platform.h"
 #include "../Parts/Chassis/Chassis.h"
 #include "../Parts/Arm/Arm.h"
@@ -12,16 +11,8 @@ public:
 	~Rover();
 
 private:
-	Grid grid;
-	Wheel kolo1;
-	Wheel kolo2;
-	Wheel kolo3;
-	Wheel kolo4;
-	Wheel kolo5;
-	Wheel kolo6;
+	vector<Cylinder> wheels;
 	Chassis chassis;
 	Platform platform;
-	
-
 };
 

@@ -27,8 +27,7 @@ Frame::Frame(float x, float y, float z)
 	d[2] = z + 25;
 
 
-	setParams(a, b, c, d, 10);
-	setColor(color);
+	setParams(color, a, b, c, d, 10);
 	drawCuboid();
 }
 

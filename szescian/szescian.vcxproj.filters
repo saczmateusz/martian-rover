@@ -34,11 +34,9 @@
     <ClInclude Include="Cuboid\Cuboid.h">
       <Filter>Cuboid</Filter>
     </ClInclude>
+    <ClInclude Include="Cylinder\Cylinder.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd">
-      <Filter>Source files</Filter>
-    </None>
     <None Include="..\RESOURCE.APS">
       <Filter>Source files</Filter>
     </None>
@@ -109,5 +107,6 @@
     <ClCompile Include="Cuboid\Cuboid.cpp">
       <Filter>Cuboid</Filter>
     </ClCompile>
+    <ClCompile Include="Cylinder\Cylinder.cpp" />
   </ItemGroup>
 </Project>

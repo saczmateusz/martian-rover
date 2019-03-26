@@ -1,6 +1,6 @@
 #include "szescian/definitions.h"
 #include "szescian/Rover/Rover.h"
-
+#include "szescian/Grid/Grid.h"
 
 // Color Palette handle
 HPALETTE hPalette = NULL;
@@ -93,7 +93,7 @@ void calcNormal(float v[3][3], float out[3])
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(GLsizei w, GLsizei h)
 	{
-	GLfloat nRange = 100.0f;
+	GLfloat nRange = 150.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
 	if(h == 0)
@@ -171,42 +171,6 @@ void SetupRC()
 	// Black brush
 	glColor3f(0.0,0.0,0.0);
 	}
-
-void walec01(void)
-{
-GLUquadricObj*obj;
-obj=gluNewQuadric();
-gluQuadricNormals(obj,GLU_SMOOTH);
-glColor3d(1,0,0);
-glPushMatrix();
-gluCylinder(obj,20,20,30,15,7);
-gluCylinder(obj,0,20,0,15,7);
-glTranslated(0,0,60);
-glRotated(180.0,0,1,0);
-gluCylinder(obj,0,20,30,15,7);
-glPopMatrix();
-}
-
-void nadwozie(float xs, float ys, float zs)
-{
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(xs, ys, zs);
-	glVertex3f(xs, ys, zs + 50);
-	glVertex3f(xs, ys + 120, zs + 50);
-	glEnd();
-
-
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(xs, ys, zs + 110);
-	glVertex3f(xs, ys, zs + 60);
-	glVertex3f(xs, ys + 120, zs + 60);
-	glEnd();
-
-}
-
-
 
 // LoadBitmapFile
 // opis: ³aduje mapê bitow¹ z pliku i zwraca jej adres.
@@ -326,28 +290,16 @@ void RenderScene(void)
 	/////////////////////////////////////////////////////////////////
 	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
 	/////////////////////////////////////////////////////////////////
-	//szescian();
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
-	//walec(40, 40);
-	//szescian();
 	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	
+	Grid grid(1000);
 	Rover rover(0, 20, 20);
 
-	//nadwozie(20, -25, -25);
-	//Uzyskanie siatki:
-
-	//Wyrysowanie prostokata:
-	//glRectd(-10.0,-10.0,20.0,20.0);
-		
-	/////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-
-	// Flush drawing commands
 	glFlush();
 	}
 
