@@ -7,7 +7,7 @@ public:
 	Cuboid(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh);
 	Cuboid();
 	~Cuboid();
-	void drawCuboid();
+	void drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg);
 	void setParams(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh);
 
 public:

@@ -16,8 +16,17 @@ Cuboid::~Cuboid()
 {
 }
 
-void Cuboid::drawCuboid()
+void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 {
+	glPushMatrix();
+
+	if (rot)
+	{
+		glTranslatef(c[0], c[1], c[2]);
+		glRotatef(rot, xdg, ydg, zdg);
+		glTranslatef(-c[0], -c[1], -c[2]);
+	}
+
 	GLfloat e[3] = { a[0] + height, a[1], a[2] };
 	GLfloat f[3] = { b[0] + height, b[1], b[2] };
 	GLfloat g[3] = { c[0] + height, c[1], c[2] };
@@ -66,6 +75,8 @@ void Cuboid::drawCuboid()
 	glVertex3fv(a);
 	glVertex3fv(e);
 	glEnd();
+
+	glPopMatrix();
 }
 
 void Cuboid::setParams(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh)

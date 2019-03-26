@@ -293,7 +293,7 @@ void RenderScene(void)
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
 	Grid grid(1000);
 	Rover rover(0, 20, 20);

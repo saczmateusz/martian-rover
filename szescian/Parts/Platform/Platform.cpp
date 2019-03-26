@@ -26,7 +26,7 @@ Platform::Platform(float x, float y, float z)
 	color[2] = 0.3f;
 
 	LeftFront.setParams(color, a, b, c, d, 5);
-	LeftFront.drawCuboid();
+	LeftFront.drawCuboid(0, 0, 0, 0);
 
 	a[2] = z - 5;
 	b[2] = z + 30;
@@ -35,7 +35,7 @@ Platform::Platform(float x, float y, float z)
 	d[1] = y + 70;
 	d[2] = z;
 	RightFront.setParams(color, a, b, c, d, 5);
-	RightFront.drawCuboid();
+	RightFront.drawCuboid(0, 0, 0, 0);
 
 	a[1] = y - 20;
 	a[2] = z - 13;
@@ -46,14 +46,14 @@ Platform::Platform(float x, float y, float z)
 	d[1] = y + 35;
 	d[2] = z - 5.5f;
 	RightBack.setParams(color, a, b, c, d, 5);
-	RightBack.drawCuboid();
+	RightBack.drawCuboid(0, 0, 0, 0);
 
 	a[2] = z + 83;
 	b[2] = z + 40;
 	c[2] = z + 40;
 	d[2] = z + 75.5f;
 	LeftBack.setParams(color, a, b, c, d, 5);
-	LeftBack.drawCuboid();
+	LeftBack.drawCuboid(0, 0, 0, 0);
 }
 
 
