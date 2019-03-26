@@ -4,74 +4,32 @@
 
 Frame::Frame(float x, float y, float z)
 {
-	x += 20;
-	z += 25;
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	y += 80;
-	glVertex3f(x, y, z);
-	x += 10;
-	glVertex3f(x, y, z);
-	y -= 80;
-	glVertex3f(x, y, z);
-	glEnd();
+	//w domysle bedzie podawane przez konstruktor
+	
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
 
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	y += 80;
-	glVertex3f(x, y, z);
-	z += 20;
-	glVertex3f(x, y, z);
-	y -= 80;
-	glVertex3f(x, y, z);
-	glEnd();
+	a[0] = x + 20;
+	a[1] = y;
+	a[2] = z + 25;
 
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	y += 80;
-	glVertex3f(x, y, z);
-	x -= 10;
-	glVertex3f(x, y, z);
-	y -= 80;
-	glVertex3f(x, y, z);
-	glEnd();
+	b[0] = x + 20;
+	b[1] = y;
+	b[2] = z + 45;
 
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	y += 80;
-	glVertex3f(x, y, z);
-	z -= 20;
-	glVertex3f(x, y, z);
-	y -= 80;
-	glVertex3f(x, y, z);
-	glEnd();
+	c[0] = x + 20;
+	c[1] = y + 80;
+	c[2] = z + 45;
 
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	z += 20;
-	glVertex3f(x, y, z);
-	x += 10;
-	glVertex3f(x, y, z);
-	z -= 20;
-	glVertex3f(x, y, z);
-	glEnd();
+	d[0] = x + 20;
+	d[1] = y + 80;
+	d[2] = z + 25;
 
-	y += 80;
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f, 0.3f, 0.3f);
-	glVertex3f(x, y, z);
-	z += 20;
-	glVertex3f(x, y, z);
-	x -= 10;
-	glVertex3f(x, y, z);
-	z -= 20;
-	glVertex3f(x, y, z);
-	glEnd();
+
+	setParams(a, b, c, d, 10);
+	setColor(color);
+	drawCuboid();
 }
 
 

@@ -4,7 +4,8 @@
 
 Cuboid::Cuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfloat h)
 {
-	drawCuboid(a, b, c, d, h);
+	setParams(a, b, c, d, h);
+	drawCuboid();
 }
 
 Cuboid::Cuboid()
@@ -16,14 +17,14 @@ Cuboid::~Cuboid()
 {
 }
 
-void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfloat h)
+void Cuboid::drawCuboid()
 {
 	GLfloat e[3] = { a[0] + h, a[1], a[2] };
 	GLfloat f[3] = { b[0] + h, b[1], b[2] };
 	GLfloat g[3] = { c[0] + h, c[1], c[2] };
 	GLfloat j[3] = { d[0] + h, d[1], d[2] };
 
-	glColor3f(0.0f, 1.0f, 0.0f);
+	glColor3fv(color);
 	glBegin(GL_POLYGON);
 	glVertex3fv(a);
 	glVertex3fv(b);
@@ -32,7 +33,6 @@ void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfl
 	glEnd();
 
 
-	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_POLYGON);
 	glVertex3fv(e);
 	glVertex3fv(f);
@@ -40,7 +40,6 @@ void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfl
 	glVertex3fv(j);
 	glEnd();
 
-	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_POLYGON);
 	glVertex3fv(e);
 	glVertex3fv(f);
@@ -48,7 +47,6 @@ void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfl
 	glVertex3fv(a);
 	glEnd();
 
-	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_POLYGON);
 	glVertex3fv(d);
 	glVertex3fv(j);
@@ -56,7 +54,6 @@ void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfl
 	glVertex3fv(c);
 	glEnd();
 
-	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_POLYGON);
 	glVertex3fv(b);
 	glVertex3fv(f);
@@ -64,11 +61,38 @@ void Cuboid::drawCuboid(GLfloat * a, GLfloat * b, GLfloat * c, GLfloat * d, GLfl
 	glVertex3fv(c);
 	glEnd();
 
-	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_POLYGON);
 	glVertex3fv(j);
 	glVertex3fv(d);
 	glVertex3fv(a);
 	glVertex3fv(e);
 	glEnd();
+}
+
+void Cuboid::setParams(GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh)
+{
+	a[0] = aa[0];
+	a[1] = aa[1];
+	a[2] = aa[2];
+
+	b[0] = bb[0];
+	b[1] = bb[1];
+	b[2] = bb[2];
+
+	c[0] = cc[0];
+	c[1] = cc[1];
+	c[2] = cc[2];
+
+	d[0] = dd[0];
+	d[1] = dd[1];
+	d[2] = dd[2];
+
+	h = hh;
+}
+
+void Cuboid::setColor(GLfloat * c)
+{
+	color[0] = c[0];
+	color[1] = c[1];
+	color[2] = c[2];
 }

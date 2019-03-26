@@ -26,7 +26,10 @@
 #include <math.h>				// Define for sqrt
 #include <stdio.h>
 #include "../RESOURCE.H"           // About box resource identifiers.
+#include <vector>
 
 #define glRGB(x, y, z)	glColor3ub((GLubyte)x, (GLubyte)y, (GLubyte)z)
 #define BITMAP_ID 0x4D42		// identyfikator formatu BMP
 #define GL_PI 3.14
+
+using namespace std;
