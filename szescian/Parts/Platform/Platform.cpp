@@ -54,6 +54,26 @@ Platform::Platform(float x, float y, float z)
 	d[2] = z + 75.5f;
 	LeftBack.setParams(color, a, b, c, d, 5);
 	LeftBack.drawCuboid(0, 0, 0, 0);
+
+	GLfloat cl[] = { 0.5f, 0.5f, 0.5f };
+	GLfloat cn[] = { x + 50, y + 40, z + 35 };
+
+	engine.setParams(cl, cn, 15, 30);
+	engine.drawCone(90, 0, 0, 1);
+
+	cn[1] = y + 10;
+
+	engineCore.setParams(cl, cn, 15, 25, 0, 1);
+	engineCore.drawCylinder(90, 1, 0, 0);
+
+	cl[0] = 1;
+	cl[1] = 0.4f;
+	cl[2] = 0.3f;
+
+	cn[1] = y - 55;
+
+	thrust.setParams(cl, cn, 10, 40);
+	thrust.drawCone(-90, 0, 0, 1);
 }
 
 

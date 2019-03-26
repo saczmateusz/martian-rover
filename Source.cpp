@@ -12,6 +12,7 @@ static HINSTANCE hInstance;
 // Rotation amounts
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
+static GLfloat zRot = 0.0f;
 
 
 static GLsizei lastHeight;
@@ -238,41 +239,6 @@ unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader
 	fclose(filePtr);
 	return bitmapImage;
 }
-
-void walec(double r, double h)
-{
-	double x, y, alpha, PI = 3.14;
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3d(0.8, 0.0, 0);
-	glVertex3d(0, 0, 0);
-	for (alpha = 0; alpha <= 2 * PI; alpha += PI / 8.0)
-	{
-		x = r*sin(alpha);
-		y = r*cos(alpha);
-		glVertex3d(x, y, 0);
-	}
-	glEnd();
-
-	glBegin(GL_QUAD_STRIP);
-	for (alpha = 0.0; alpha <= 2 * PI; alpha += PI / 8.0)
-	{
-		x = r*sin(alpha);
-		y = r* cos(alpha);
-		glVertex3d(x, y, 0);
-		glVertex3d(x, y, h);
-	}
-	glEnd();
-
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex3d(0, 0, h);
-	for (alpha = 0; alpha >= -2 * PI; alpha -= PI / 8.0)
-	{
-		x = r*sin(alpha);
-		y = r*cos(alpha);
-		glVertex3d(x, y, h);
-	}
-	glEnd();
-}
 // Called to draw scene
 
 void RenderScene(void)
@@ -286,6 +252,7 @@ void RenderScene(void)
 	glPushMatrix();
 	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
+	glRotatef(zRot, 0.0f, 0.0f, 1.0f);
 
 	/////////////////////////////////////////////////////////////////
 	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
@@ -293,7 +260,7 @@ void RenderScene(void)
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
 	Grid grid(1000);
 	Rover rover(0, 20, 20);
@@ -643,8 +610,15 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			if(wParam == VK_RIGHT)
 				yRot += 5.0f;
 
+			if (wParam == VK_SUBTRACT)
+				zRot -= 5.0f;
+
+			if (wParam == VK_ADD)
+				zRot += 5.0f;
+
 			xRot = GLfloat((const int)xRot % 360);
 			yRot = GLfloat((const int)yRot % 360);
+			zRot = GLfloat((const int)zRot % 360);
 
 			InvalidateRect(hWnd,NULL,FALSE);
 			}

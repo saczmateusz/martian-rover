@@ -2,6 +2,7 @@
 #include "../../definitions.h"
 #include "../../Cuboid/Cuboid.h"
 #include "../Arm/Arm.h"
+#include "../../Cone/Cone.h"
 
 
 class Platform
@@ -20,5 +21,8 @@ private:
 	Cuboid LeftBack;
 	Cuboid RightBack;
 	Arm arm;
+	Cone engine;
+	Cylinder engineCore;
+	Cone thrust;
 };
 
