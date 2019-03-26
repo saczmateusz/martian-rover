@@ -10,7 +10,7 @@ Chassis::Chassis(float x, float y, float z) :
 	
 	for (int j = 0; j < 3; ++j)
 	{
-		Cylinder axle(cl, cn, 2, 15, 15, 1);
+		Cylinder axle(cl, cn, 3, 15, 15, 1);
 		axles.push_back(axle);
 		cn[1] += 30;
 	}
@@ -18,14 +18,14 @@ Chassis::Chassis(float x, float y, float z) :
 	cn[2] += 50;
 	for (int j = 0; j < 3; ++j)
 	{
-		Cylinder axle(cl, cn, 2, 15, 15, -1);
+		Cylinder axle(cl, cn, 3, 15, 15, -1);
 		axles.push_back(axle);
 		cn[1] += 30;
 	}
 
 	for (auto &axle : axles)
 	{
-		axle.drawCylinder();
+		axle.drawCylinder(0, 0, 0, 0);
 	}
 }
 

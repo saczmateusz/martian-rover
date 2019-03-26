@@ -33,8 +33,17 @@ void Cylinder::setParams(GLfloat * colour, GLfloat * cen, GLfloat r, GLfloat hh,
 	side = s;
 }
 
-void Cylinder::drawCylinder()
+void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 {
+	glPushMatrix();
+
+	if (rot)
+	{
+		glTranslatef(center[0], center[1], center[2]);
+		glRotatef(rot, xdg, ydg, zdg);
+		glTranslatef(-center[0], -center[1], -center[2]);
+	}
+
 	GLfloat x = center[0], y = center[1], z = center[2];
 	angle = 0;
 	glBegin(GL_TRIANGLE_FAN);
@@ -91,5 +100,5 @@ void Cylinder::drawCylinder()
 		angle += GLfloat(GL_PI / 10);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
-
+	glPopMatrix();
 }

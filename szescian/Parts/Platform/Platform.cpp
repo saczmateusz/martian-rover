@@ -2,11 +2,8 @@
 
 
 
-Platform::Platform(float x, float y, float z) :
-	LeftFront(),
-	RightFront(),
-	LeftBack(),
-	RightBack()
+Platform::Platform(float x, float y, float z)
+	: arm(x, y, z)
 {
 	a[0] = x + 30;
 	a[1] = y + 40;

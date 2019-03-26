@@ -13,12 +13,6 @@
     <ClInclude Include="Parts\Platform\Platform.h">
       <Filter>Parts\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Parts\Wheel\Wheel.h">
-      <Filter>Parts\Wheel</Filter>
-    </ClInclude>
-    <ClInclude Include="Parts\Arm\Arm.h">
-      <Filter>Parts\Arm</Filter>
-    </ClInclude>
     <ClInclude Include="Parts\Chassis\Chassis.h">
       <Filter>Parts\Chassis</Filter>
     </ClInclude>
@@ -28,13 +22,11 @@
     <ClInclude Include="Parts\Chassis\Frame\Frame.h">
       <Filter>Parts\Chassis\Frame</Filter>
     </ClInclude>
-    <ClInclude Include="Parts\Chassis\Axle\Axle.h">
-      <Filter>Parts\Chassis\Axle</Filter>
-    </ClInclude>
     <ClInclude Include="Cuboid\Cuboid.h">
       <Filter>Cuboid</Filter>
     </ClInclude>
     <ClInclude Include="Cylinder\Cylinder.h" />
+    <ClInclude Include="Parts\Arm\Arm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS">
@@ -86,12 +78,6 @@
     <ClCompile Include="Parts\Platform\Platform.cpp">
       <Filter>Parts\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Parts\Wheel\Wheel.cpp">
-      <Filter>Parts\Wheel</Filter>
-    </ClCompile>
-    <ClCompile Include="Parts\Arm\Arm.cpp">
-      <Filter>Parts\Arm</Filter>
-    </ClCompile>
     <ClCompile Include="Parts\Chassis\Chassis.cpp">
       <Filter>Parts\Chassis</Filter>
     </ClCompile>
@@ -101,12 +87,10 @@
     <ClCompile Include="Parts\Chassis\Frame\Frame.cpp">
       <Filter>Parts\Chassis\Frame</Filter>
     </ClCompile>
-    <ClCompile Include="Parts\Chassis\Axle\Axle.cpp">
-      <Filter>Parts\Chassis\Axle</Filter>
-    </ClCompile>
     <ClCompile Include="Cuboid\Cuboid.cpp">
       <Filter>Cuboid</Filter>
     </ClCompile>
     <ClCompile Include="Cylinder\Cylinder.cpp" />
+    <ClCompile Include="Parts\Arm\Arm.cpp" />
   </ItemGroup>
 </Project>

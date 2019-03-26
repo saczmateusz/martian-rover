@@ -8,7 +8,7 @@ public:
 	Cylinder();
 	~Cylinder();
 	void setParams(GLfloat * colour, GLfloat * cen, GLfloat r, GLfloat hh, GLfloat grad, int s);
-	void drawCylinder();
+	void drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg);
 
 public:
 	GLfloat color[3];

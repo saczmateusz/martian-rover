@@ -6,7 +6,7 @@ Rover::Rover(float x, float y, float z) :
 	chassis(x, y, z),
 	platform(x, y, z)
 {
-	GLfloat cl[] = { 0.7f, 0.7f, 0.7f };
+	GLfloat cl[] = { 0.3f, 0.3f, 0.3f };
 	GLfloat cn[] = { x + 10, y + 10, z };
 	
 	for (int j = 0; j < 3; ++j)
@@ -26,7 +26,7 @@ Rover::Rover(float x, float y, float z) :
 
 	for (auto &wheel : wheels)
 	{
-		wheel.drawCylinder();
+		wheel.drawCylinder(0, 0, 0, 0);
 	}
 }
 

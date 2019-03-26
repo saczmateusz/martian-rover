@@ -1,6 +1,7 @@
 #pragma once
 #include "../../definitions.h"
 #include "../../Cuboid/Cuboid.h"
+#include "../Arm/Arm.h"
 
 
 class Platform
@@ -18,5 +19,6 @@ private:
 	Cuboid RightFront;
 	Cuboid LeftBack;
 	Cuboid RightBack;
+	Arm arm;
 };
 

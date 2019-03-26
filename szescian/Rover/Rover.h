@@ -2,7 +2,6 @@
 #include "../Cylinder/Cylinder.h"
 #include "../Parts/Platform/Platform.h"
 #include "../Parts/Chassis/Chassis.h"
-#include "../Parts/Arm/Arm.h"
 
 class Rover
 {
