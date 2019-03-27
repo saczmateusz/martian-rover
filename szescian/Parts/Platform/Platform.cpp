@@ -56,7 +56,7 @@ Platform::Platform(float x, float y, float z)
 	LeftBack.drawCuboid(0, 0, 0, 0);
 
 	GLfloat cl[] = { 0.5f, 0.5f, 0.5f };
-	GLfloat cn[] = { x + 50, y + 40, z + 35 };
+	GLfloat cn[] = { x + 40, y + 40, z + 35 };
 
 	engine.setParams(cl, cn, 15, 30);
 	engine.drawCone(90, 0, 0, 1);
