@@ -52,7 +52,7 @@ void Cone::drawCone(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 		z = GLfloat(center[2] + radius * cos(angle));
 
 		glVertex3f(x, y, z);
-		angle += GLfloat(GL_PI / 10);
+		angle += GLfloat(GL_PI / PRECISION);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
 

@@ -56,7 +56,7 @@ void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 
 		glVertex3f(x, y, z);
 
-		angle += GLfloat(GL_PI / 10);
+		angle += GLfloat(GL_PI / PRECISION);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
 
@@ -78,7 +78,7 @@ void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 		x += gradient;
 		glVertex3f(x, y, z);
 
-		angle += GLfloat(GL_PI / 10);
+		angle += GLfloat(GL_PI / PRECISION);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
 
@@ -97,7 +97,7 @@ void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 		glVertex3f(x, y, z);
 
 
-		angle += GLfloat(GL_PI / 10);
+		angle += GLfloat(GL_PI / PRECISION);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
 	glPopMatrix();

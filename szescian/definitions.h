@@ -32,4 +32,6 @@
 #define BITMAP_ID 0x4D42		// identyfikator formatu BMP
 #define GL_PI 3.14
 
+#define PRECISION 10
+
 using namespace std;
