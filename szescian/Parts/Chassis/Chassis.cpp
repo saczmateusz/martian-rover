@@ -15,7 +15,7 @@ Chassis::Chassis(float x, float y, float z) :
 		cn[1] += 30;
 	}
 	cn[1] = y + 10;
-	cn[2] += 50;
+	cn[0] += 50;
 	for (int j = 0; j < 3; ++j)
 	{
 		Cylinder axle(cl, cn, 3, 15, 15, -1);

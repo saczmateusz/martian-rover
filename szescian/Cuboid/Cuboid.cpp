@@ -27,10 +27,10 @@ void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 		glTranslatef(-c[0], -c[1], -c[2]);
 	}
 
-	GLfloat e[3] = { a[0] + height, a[1], a[2] };
-	GLfloat f[3] = { b[0] + height, b[1], b[2] };
-	GLfloat g[3] = { c[0] + height, c[1], c[2] };
-	GLfloat j[3] = { d[0] + height, d[1], d[2] };
+	GLfloat e[3] = { a[0], a[1], a[2] + height };
+	GLfloat f[3] = { b[0], b[1], b[2] + height };
+	GLfloat g[3] = { c[0], c[1], c[2] + height };
+	GLfloat j[3] = { d[0], d[1], d[2] + height };
 
 	glColor3fv(color);
 	glBegin(GL_POLYGON);
@@ -42,38 +42,38 @@ void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 
 
 	glBegin(GL_POLYGON);
+	glVertex3fv(a);
+	glVertex3fv(b);
+	glVertex3fv(f);
 	glVertex3fv(e);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3fv(a);
+	glVertex3fv(d);
+	glVertex3fv(j);
+	glVertex3fv(e);
+	glEnd();
+
+	glBegin(GL_POLYGON);
 	glVertex3fv(f);
 	glVertex3fv(g);
 	glVertex3fv(j);
-	glEnd();
-
-	glBegin(GL_POLYGON);
 	glVertex3fv(e);
-	glVertex3fv(f);
-	glVertex3fv(b);
-	glVertex3fv(a);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(d);
+	glVertex3fv(f);
+	glVertex3fv(g);
+	glVertex3fv(c);
+	glVertex3fv(b);
+	glEnd();
+
+	glBegin(GL_POLYGON);
 	glVertex3fv(j);
 	glVertex3fv(g);
 	glVertex3fv(c);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-	glVertex3fv(b);
-	glVertex3fv(f);
-	glVertex3fv(g);
-	glVertex3fv(c);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-	glVertex3fv(j);
 	glVertex3fv(d);
-	glVertex3fv(a);
-	glVertex3fv(e);
 	glEnd();
 
 	glPopMatrix();

@@ -45,11 +45,11 @@ void Cone::drawCone(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3fv(color);
 	glVertex3f(x, y, z);
-	x -= height;
+	z -= height;
 	do
 	{
+		x = GLfloat(center[0] + radius * cos(angle));
 		y = GLfloat(center[1] + radius * sin(angle));
-		z = GLfloat(center[2] + radius * cos(angle));
 
 		glVertex3f(x, y, z);
 		angle += GLfloat(GL_PI / PRECISION);

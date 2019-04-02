@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="..\Source.cpp" />
     <ClCompile Include="Cone\Cone.cpp" />
+    <ClCompile Include="Obstacle\Obstacle.cpp" />
     <ClCompile Include="Parts\Arm\Arm.cpp" />
     <ClCompile Include="Cuboid\Cuboid.cpp" />
     <ClCompile Include="Cylinder\Cylinder.cpp" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="..\RESOURCE.H" />
     <ClInclude Include="Cone\Cone.h" />
+    <ClInclude Include="Obstacle\Obstacle.h" />
     <ClInclude Include="Parts\Arm\Arm.h" />
     <ClInclude Include="Cuboid\Cuboid.h" />
     <ClInclude Include="Cylinder\Cylinder.h" />

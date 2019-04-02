@@ -263,7 +263,7 @@ void RenderScene(void)
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
 	Grid grid(1000);
-	Rover rover(0, 20, 20);
+	Rover rover(20, 20, 0);
 
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);

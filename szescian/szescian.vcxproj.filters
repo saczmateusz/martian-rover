@@ -28,6 +28,7 @@
     <ClInclude Include="Cylinder\Cylinder.h" />
     <ClInclude Include="Parts\Arm\Arm.h" />
     <ClInclude Include="Cone\Cone.h" />
+    <ClInclude Include="Obstacle\Obstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS">
@@ -94,5 +95,6 @@
     <ClCompile Include="Cylinder\Cylinder.cpp" />
     <ClCompile Include="Parts\Arm\Arm.cpp" />
     <ClCompile Include="Cone\Cone.cpp" />
+    <ClCompile Include="Obstacle\Obstacle.cpp" />
   </ItemGroup>
 </Project>

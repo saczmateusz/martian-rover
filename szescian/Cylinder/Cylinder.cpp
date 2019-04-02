@@ -51,8 +51,8 @@ void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	glVertex3f(x, y, z);
 	do
 	{
-		x = GLfloat(center[0] + radius * sin(angle));
 		y = GLfloat(center[1] + radius * cos(angle));
+		z = GLfloat(center[2] + radius * sin(angle));
 
 		glVertex3f(x, y, z);
 
@@ -61,38 +61,38 @@ void Cylinder::drawCylinder(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	glEnd();
 
 
-	x = center[0];
 	y = center[1];
+	z = center[2];
 	angle = 0;
 	glBegin(GL_TRIANGLE_STRIP);
 	glColor3fv(color);
 	do
 	{
-		z = center[2];
-		x = GLfloat(center[0] + radius * sin(angle));
+		x = center[0];
 		y = GLfloat(center[1] + radius * cos(angle));
+		z = GLfloat(center[2] + radius * sin(angle));
 
 		glVertex3f(x, y, z);
 
-		z += height * side;
-		x += gradient;
+		x += height * side;
+		z += gradient;
 		glVertex3f(x, y, z);
 
 		angle += GLfloat(GL_PI / PRECISION);
 	} while (angle <= 2 * (GL_PI + 0.1));
 	glEnd();
 
-	x = center[0];
+	x = center[0] + height * side;
 	y = center[1];
-	z = (center[2] + height * side);
+	z = center[2];
 	angle = 0;
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(0.5f, 0.5f, 0.5f);
-	glVertex3f(x + gradient, y, z);
+	glVertex3f(x, y, z + gradient);
 	do
 	{
-		x = gradient + GLfloat(center[0] + radius * sin(angle));
 		y = GLfloat(center[1] + radius * cos(angle));
+		z = gradient + GLfloat(center[2] + radius * sin(angle));
 
 		glVertex3f(x, y, z);
 
