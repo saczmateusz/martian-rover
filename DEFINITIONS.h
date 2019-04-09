@@ -25,7 +25,7 @@
 #include <gl\glu.h>             // GLU library
 #include <math.h>				// Define for sqrt
 #include <stdio.h>
-#include "../RESOURCE.H"           // About box resource identifiers.
+#include "RESOURCE.H"           // About box resource identifiers.
 #include <vector>
 
 #define glRGB(x, y, z)	glColor3ub((GLubyte)x, (GLubyte)y, (GLubyte)z)

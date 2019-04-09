@@ -1,7 +1,7 @@
 #pragma once
-#include "../definitions.h"
-#include "../Cone/Cone.h";
-#include "../Cylinder/Cylinder.h";
+#include "../../DEFINITIONS.h"
+#include "../Cone/Cone.h"
+#include "../Cylinder/Cylinder.h"
 
 class Obstacle
 {

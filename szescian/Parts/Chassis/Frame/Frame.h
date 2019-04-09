@@ -1,5 +1,5 @@
 #pragma once
-#include "../../definitions.h"
+#include "../../../../DEFINITIONS.h"
 #include "../../../Cuboid/Cuboid.h"
 
 class Frame : public Cuboid

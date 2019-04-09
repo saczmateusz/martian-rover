@@ -1,5 +1,5 @@
 #pragma once
-#include "../definitions.h"
+#include "../../DEFINITIONS.h"
 
 class Cone
 {

@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="definitions.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RESOURCE.H">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="Grid\Grid.h">
       <Filter>Grid</Filter>
     </ClInclude>
@@ -29,6 +23,10 @@
     <ClInclude Include="Parts\Arm\Arm.h" />
     <ClInclude Include="Cone\Cone.h" />
     <ClInclude Include="Obstacle\Obstacle.h" />
+    <ClInclude Include="Terrain\Terrain.h" />
+    <ClInclude Include="..\OBJ_Loader.h" />
+    <ClInclude Include="..\DEFINITIONS.h" />
+    <ClInclude Include="..\RESOURCE.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS">
@@ -96,5 +94,6 @@
     <ClCompile Include="Parts\Arm\Arm.cpp" />
     <ClCompile Include="Cone\Cone.cpp" />
     <ClCompile Include="Obstacle\Obstacle.cpp" />
+    <ClCompile Include="Terrain\Terrain.cpp" />
   </ItemGroup>
 </Project>
