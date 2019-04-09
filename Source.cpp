@@ -2,8 +2,8 @@
 #include "szescian/Rover/Rover.h"
 #include "szescian/Grid/Grid.h"
 #include "szescian/Cone/Cone.h"
-//#include "szescian/Terrain/Terrain.h"
-#include "OBJ_Loader.h"
+#include "szescian/Terrain/Terrain.h"
+//#include "include/OBJ_Loader.h"
 
 // Color Palette handle
 HPALETTE hPalette = NULL;
@@ -97,7 +97,7 @@ void calcNormal(float v[3][3], float out[3])
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(GLsizei w, GLsizei h)
 	{
-	GLfloat nRange = 150.0f;
+	GLfloat nRange = 300.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
 	if(h == 0)
@@ -263,71 +263,17 @@ void RenderScene(void)
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	Grid grid(1000);
+	//Grid grid(1000);
 	Rover rover(20, 20, 0);
-	//Terrain terrain;
-	//terrain.draw();
+	Terrain terrain;
+
 	/////////////////////////////////////////////////////////////////
-
-
-	
-
-	objl::Loader floor;
-	glPushMatrix();
-
-	glRotatef(90, 1, 0, 0);
-	glScalef(2, 2, 2);
-	/*
-	if (floor.LoadFile("objects/floor.obj"))
-	{
-		for (int i = 0; i < floor.LoadedMeshes.size(); i++)
-		{
-			objl::Mesh curMesh = floor.LoadedMeshes[i];
-
-			for (int j = 0; j < curMesh.Indices.size(); j += 3)
-			{
-				glBegin(GL_TRIANGLES);
-				//double random = 0.5f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.55f - 0.5f)));
-				glColor3f(1, 0, 0);
-				if (i == 0) glColor3f(0, 0, 1);
-				glVertex3f(
-					curMesh.Vertices[curMesh.Indices[j]].Position.X,
-					curMesh.Vertices[curMesh.Indices[j]].Position.Y,
-					curMesh.Vertices[curMesh.Indices[j]].Position.Z
-				);
-
-				glVertex3f(
-					curMesh.Vertices[curMesh.Indices[j + 1]].Position.X,
-					curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y,
-					curMesh.Vertices[curMesh.Indices[j + 1]].Position.Z
-				);
-
-				glVertex3f(
-					curMesh.Vertices[curMesh.Indices[j + 2]].Position.X,
-					curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y,
-					curMesh.Vertices[curMesh.Indices[j + 2]].Position.Z
-				);
-				glEnd();
-			}
-		}
-	}
-	*/
-	glPopMatrix();
-
-
 
 	
 
 	//////////////////////////////////////////////////////////////
-
-	//GLfloat color[3] = { 0.5f, 0.5f, 0.5f };
-	//GLfloat center[3] = { -10, -10, 60 };
-	//Cone stozek(color, center, 15, 50);
-	//stozek.drawCone(45, 0, 1, 0);
-
-
 
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);

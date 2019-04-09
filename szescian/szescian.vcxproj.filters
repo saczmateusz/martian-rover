@@ -24,9 +24,9 @@
     <ClInclude Include="Cone\Cone.h" />
     <ClInclude Include="Obstacle\Obstacle.h" />
     <ClInclude Include="Terrain\Terrain.h" />
-    <ClInclude Include="..\OBJ_Loader.h" />
     <ClInclude Include="..\DEFINITIONS.h" />
     <ClInclude Include="..\RESOURCE.H" />
+    <ClInclude Include="..\include\OBJ_Loader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS">
