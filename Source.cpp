@@ -3,7 +3,7 @@
 #include "szescian/Grid/Grid.h"
 #include "szescian/Cone/Cone.h"
 #include "szescian/Terrain/Terrain.h"
-//#include "include/OBJ_Loader.h"
+#include "szescian/Obstacle/Obstacle.h"
 
 // Color Palette handle
 HPALETTE hPalette = NULL;
@@ -17,6 +17,7 @@ static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 static GLfloat zRot = 0.0f;
 
+static GLfloat zoom;
 
 static GLsizei lastHeight;
 static GLsizei lastWidth;
@@ -97,7 +98,7 @@ void calcNormal(float v[3][3], float out[3])
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(GLsizei w, GLsizei h)
 	{
-	GLfloat nRange = 300.0f;
+	GLfloat nRange = 100.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
 	if(h == 0)
@@ -261,16 +262,19 @@ void RenderScene(void)
 	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
 	/////////////////////////////////////////////////////////////////
 	
+	glRotatef(zoom, 0, 0, 0);
+	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
 	//Grid grid(1000);
-	Rover rover(20, 20, 0);
+	Rover rover(-20, -20, 5);
 	Terrain terrain;
 
 	/////////////////////////////////////////////////////////////////
-
+	Obstacle ob1(-5, -5, 0, 20);
+	Obstacle ob2(3, -2, 0, 50);
 	
 
 	//////////////////////////////////////////////////////////////
@@ -428,7 +432,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				50, 50,
+				-1400, 50,
 				800, 800,
 				NULL,
 				NULL,
@@ -608,23 +612,29 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 		// Key press, check for arrow keys to do cube rotation.
 		case WM_KEYDOWN:
 			{
-			if(wParam == VK_UP)
+			if(wParam == VK_NUMPAD8)
 				xRot-= 5.0f;
 
-			if(wParam == VK_DOWN)
+			if(wParam == VK_NUMPAD2)
 				xRot += 5.0f;
 
-			if(wParam == VK_LEFT)
+			if(wParam == VK_NUMPAD4)
 				yRot -= 5.0f;
 
-			if(wParam == VK_RIGHT)
+			if(wParam == VK_NUMPAD6)
 				yRot += 5.0f;
 
-			if (wParam == VK_SUBTRACT)
+			if (wParam == VK_NUMPAD9)
 				zRot -= 5.0f;
 
-			if (wParam == VK_ADD)
+			if (wParam == VK_NUMPAD7)
 				zRot += 5.0f;
+
+			if (wParam == VK_SUBTRACT)
+				zoom += 20.0f;
+
+			if (wParam == VK_ADD)
+				zoom -= 20.0f;
 
 			xRot = GLfloat((const int)xRot % 360);
 			yRot = GLfloat((const int)yRot % 360);
