@@ -4,12 +4,13 @@
 
 Terrain::Terrain()
 {
+	objl::Loader floor;
 	glPushMatrix();
 
 	glRotatef(90, 1, 0, 0);
-	glScalef(1, 1, 1);
+	glScalef(2, 2, 2);
 
-	if (floor.LoadFile("mars.obj"))
+	if (floor.LoadFile("objects/xD.obj"))
 	{
 		for (int i = 0; i < floor.LoadedMeshes.size(); i++)
 		{
@@ -19,8 +20,8 @@ Terrain::Terrain()
 			{
 				glBegin(GL_TRIANGLES);
 				//double random = 0.5f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.55f - 0.5f)));
-				glColor3f(0.55f, 0.22f, 0.07f);
-				//if (i == 0) glColor3f(0, 0, 1);
+				glColor3f(1, 0, 0);
+				if (i == 0) glColor3f(0, 0, 1);
 				glVertex3f(
 					curMesh.Vertices[curMesh.Indices[j]].Position.X,
 					curMesh.Vertices[curMesh.Indices[j]].Position.Y,
