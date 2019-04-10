@@ -1,6 +1,6 @@
 #pragma once
 #include "../../DEFINITIONS.h"
-#include "../../include/OBJ_Loader.h"
+#include "../../OBJ_Loader.h"
 
 class Terrain
 {
@@ -9,6 +9,6 @@ public:
 	~Terrain();
 
 public:
-	
+	objl::Loader floor;
 };
 

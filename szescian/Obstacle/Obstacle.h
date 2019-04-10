@@ -1,18 +1,14 @@
 #pragma once
 #include "../../DEFINITIONS.h"
-#include "../Cone/Cone.h"
-#include "../Cylinder/Cylinder.h"
+#include "../../OBJ_Loader.h"
 
 class Obstacle
 {
 public:
-	Obstacle();
+	Obstacle(float xx, float yy, float zz, float scale);
 	~Obstacle();
 
 public:
-	vector<Cylinder> basis;
-	Cylinder core;
-	Cone apex;
-
+	objl::Loader floor;
 };
 
