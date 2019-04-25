@@ -29,9 +29,47 @@ Frame::Frame(float x, float y, float z)
 
 	setParams(color, a, b, c, d, 10);
 	drawCuboid(0, 0, 0, 0);
+	
+	setBackX(a[0], b[0]);
+	setBackY(a[1], b[1]);
+	setBackZ(a[2], b[2]);
 }
 
 
 Frame::~Frame()
 {
 }
+
+void Frame::setBackX(float a, float b)
+{
+	this->backX = (a + b) / 2;
+}
+
+void Frame::setBackY(float a, float b)
+{
+	this->backY = (a + b) / 2;
+}
+
+void Frame::setBackZ(float a, float b)
+{
+	this->backZ = (a + b) / 2;
+}
+
+float Frame::getBackX()
+{
+	return this->backX;
+}
+
+float Frame::getBackY()
+{
+	return this->backY;
+}
+
+float Frame::getBackZ()
+{
+	return this->backZ;
+}
+
+
+
+

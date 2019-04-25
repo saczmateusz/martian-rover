@@ -1,5 +1,5 @@
 #pragma once
-#include "../../DEFINITIONS.h"
+#include "../definitions.h"
 
 class Grid
 {

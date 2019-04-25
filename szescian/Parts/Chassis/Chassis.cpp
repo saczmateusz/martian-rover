@@ -27,10 +27,38 @@ Chassis::Chassis(float x, float y, float z) :
 	{
 		axle.drawCylinder(0, 0, 0, 0);
 	}
+
+	setFrameX(frame.getBackX());
+	setFrameY(frame.getBackY());
+	setFrameZ(frame.getBackZ());
 }
 
 
 Chassis::~Chassis()
 {
 	
+}
+
+void Chassis::setFrameX(float a) {
+	this->frameX = a;
+}
+
+void Chassis::setFrameY(float a) {
+	this->frameY = a;
+}
+
+void Chassis::setFrameZ(float a) {
+	this->frameZ = a;
+}
+
+float Chassis::getFrameX() {
+	return this->frameX;
+}
+
+float Chassis::getFrameY() {
+	return this->frameY;
+}
+
+float Chassis::getFrameZ() {
+	return this->frameZ;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../DEFINITIONS.h"
+#include "../../definitions.h"
 #include "../../Cuboid/Cuboid.h"
 #include "../Arm/Arm.h"
 #include "../../Cone/Cone.h"
