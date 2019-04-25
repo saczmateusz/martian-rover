@@ -612,6 +612,27 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 		// Key press, check for arrow keys to do cube rotation.
 		case WM_KEYDOWN:
 			{
+
+			if (wParam == VK_NUMPAD1 || wParam == VK_NUMPAD2 || wParam == VK_NUMPAD3 || wParam == VK_NUMPAD4 || wParam == VK_NUMPAD5) {
+				glLoadIdentity();
+				xRot = 0;
+				yRot = 0;
+				zRot = 0;
+
+				if (wParam == VK_NUMPAD1)
+					gluLookAt(testX, testY + 20, testZ + 20, testX, testY, testZ, 0, 0, 1);
+
+
+				if (wParam == VK_NUMPAD2)
+					gluLookAt(testX, testY - 60, testZ + 40, testX, testY, testZ, 0, 0, 1);
+
+				if (wParam == VK_NUMPAD3)
+					gluLookAt(testX + 40, testY, testZ + 20, testX, testY, testZ, 0, 0, 1);
+
+				if (wParam == VK_NUMPAD4)
+					gluLookAt(testX - 40, testY, testZ + 20, testX, testY, testZ, 0, 0, 1);
+			}
+
 			if(wParam == VK_NUMPAD8)
 				xRot-= 5.0f;
 
