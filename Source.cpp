@@ -432,7 +432,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				-1400, 50,
+				50, 50,
 				800, 800,
 				NULL,
 				NULL,
