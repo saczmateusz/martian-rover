@@ -2,9 +2,9 @@
 
 
 
-Cuboid::Cuboid(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh)
+Cuboid::Cuboid(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh, unsigned int texID)
 {
-	setParams(colour, aa, bb, cc, dd, hh);
+	setParams(colour, aa, bb, cc, dd, hh, texID);
 }
 
 Cuboid::Cuboid()
@@ -27,60 +27,69 @@ void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 		glTranslatef(-c[0], -c[1], -c[2]);
 	}
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	GLfloat e[3] = { a[0], a[1], a[2] + height };
 	GLfloat f[3] = { b[0], b[1], b[2] + height };
 	GLfloat g[3] = { c[0], c[1], c[2] + height };
 	GLfloat j[3] = { d[0], d[1], d[2] + height };
-
-	glColor3fv(color);
+	if(tex == 0)
+		glColor3fv(color);
 	glBegin(GL_POLYGON);
-	glVertex3fv(a);
-	glVertex3fv(b);
-	glVertex3fv(c);
-	glVertex3fv(d);
+	glTexCoord2d(0, 0); glVertex3fv(a);
+	glTexCoord2d(0, 1); glVertex3fv(b);
+	glTexCoord2d(1, 1); glVertex3fv(c);
+	glTexCoord2d(1, 0); glVertex3fv(d);
 	glEnd();
 
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(a);
-	glVertex3fv(b);
-	glVertex3fv(f);
-	glVertex3fv(e);
+	glTexCoord2d(0, 0); glVertex3fv(a);
+	glTexCoord2d(0, 1); glVertex3fv(b);
+	glTexCoord2d(1, 1); glVertex3fv(f);
+	glTexCoord2d(1, 0); glVertex3fv(e);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(a);
-	glVertex3fv(d);
-	glVertex3fv(j);
-	glVertex3fv(e);
+	glTexCoord2d(0, 0); glVertex3fv(a);
+	glTexCoord2d(0, 1); glVertex3fv(d);
+	glTexCoord2d(1, 1); glVertex3fv(j);
+	glTexCoord2d(1, 0); glVertex3fv(e);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(f);
-	glVertex3fv(g);
-	glVertex3fv(j);
-	glVertex3fv(e);
+	glTexCoord2d(0, 0); glVertex3fv(f);
+	glTexCoord2d(0, 1); glVertex3fv(g);
+	glTexCoord2d(1, 1); glVertex3fv(j);
+	glTexCoord2d(1, 0); glVertex3fv(e);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(f);
-	glVertex3fv(g);
-	glVertex3fv(c);
-	glVertex3fv(b);
+	glTexCoord2d(0, 0); glVertex3fv(f);
+	glTexCoord2d(0, 1); glVertex3fv(g);
+	glTexCoord2d(1, 1); glVertex3fv(c);
+	glTexCoord2d(1, 0); glVertex3fv(b);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3fv(j);
-	glVertex3fv(g);
-	glVertex3fv(c);
-	glVertex3fv(d);
+	glTexCoord2d(0, 0); glVertex3fv(j);
+	glTexCoord2d(0, 1); glVertex3fv(g);
+	glTexCoord2d(1, 1); glVertex3fv(c);
+	glTexCoord2d(1, 0); glVertex3fv(d);
 	glEnd();
+
+
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
 
-void Cuboid::setParams(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh)
+void Cuboid::setParams(GLfloat * colour, GLfloat * aa, GLfloat * bb, GLfloat * cc, GLfloat * dd, GLfloat hh, unsigned int texID)
 {
+	tex = texID;
+
 	a[0] = aa[0];
 	a[1] = aa[1];
 	a[2] = aa[2];

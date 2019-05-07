@@ -2,7 +2,7 @@
 
 
 
-Arm::Arm(float x, float y, float z)
+Arm::Arm(float x, float y, float z, unsigned int smokID)
 {
 	GLfloat cl[] = { 1, 1, 0.1f };
 	GLfloat cn[] = { x + 35, y + 70, z + 35};
@@ -37,7 +37,7 @@ Arm::Arm(float x, float y, float z)
 	d[1] = y + 75;
 	d[2] = z + 40;
 
-	basis.setParams(cl, a, b, c, d, 50);
+	basis.setParams(cl, a, b, c, d, 50, smokID);
 	basis.drawCuboid(0, 0, 0, 0);
 
 	a[1] -= 5;
@@ -52,7 +52,7 @@ Arm::Arm(float x, float y, float z)
 	d[1] -= 5;
 	d[2] += 45;
 
-	forearm.setParams(cl, a, b, c, d, 25);
+	forearm.setParams(cl, a, b, c, d, 25, smokID);
 	forearm.drawCuboid(-90, 1, 0, 0);
 }
 

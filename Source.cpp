@@ -570,9 +570,9 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			///////////////////////////////////////////////////////////////////
 
 			dust = LoadTexture("Textures/dust.png", 1);
-			banana = LoadTexture("Textures/banana2.png", 1);
+			banana = LoadTexture("Textures/banana.png", 1);
 			rock = LoadTexture("Textures/rock.png", 1);
-			smok = LoadTexture("Textures/smok2.png", 1);
+			smok = LoadTexture("Textures/smok.png", 1);
 
 			// ustalenie sposobu mieszania tekstury z t³em
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);

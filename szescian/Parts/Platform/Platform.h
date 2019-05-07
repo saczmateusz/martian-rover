@@ -8,7 +8,7 @@
 class Platform
 {
 public:
-	Platform(float x, float y, float z);
+	Platform(float x, float y, float z, unsigned int texID, unsigned int smokID);
 	~Platform();
 private:
 	GLfloat a[3];
