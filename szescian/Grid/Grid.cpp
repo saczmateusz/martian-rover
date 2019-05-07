@@ -14,7 +14,7 @@ Grid::~Grid()
 
 void Grid::DrawGrid(int HALF_GRID_SIZE)
 {
-	glBegin(GL_LINES);
+	/*glBegin(GL_LINES);
 	glColor3f(0.75f, 0.75f, 0.75f);
 	for (int i = -HALF_GRID_SIZE; i <= HALF_GRID_SIZE; i += 10)
 	{
@@ -24,7 +24,7 @@ void Grid::DrawGrid(int HALF_GRID_SIZE)
 		glVertex3f((float)i, (float)-HALF_GRID_SIZE, 0);
 		glVertex3f((float)i, (float)HALF_GRID_SIZE, 0);
 	}
-	glEnd();
+	glEnd();*/
 
 
 	glBegin(GL_LINES);

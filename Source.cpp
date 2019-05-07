@@ -17,6 +17,11 @@ static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 static GLfloat zRot = 0.0f;
 
+static float cameraX;
+static float cameraY;
+static float cameraZ;
+
+
 static GLfloat zoom;
 
 static GLsizei lastHeight;
@@ -98,7 +103,7 @@ void calcNormal(float v[3][3], float out[3])
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(GLsizei w, GLsizei h)
 	{
-	GLfloat nRange = 100.0f;
+	GLfloat nRange = 200.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
 	if(h == 0)
@@ -268,14 +273,22 @@ void RenderScene(void)
 	//glPolygonMode(GL_BACK,GL_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	//Grid grid(1000);
-	Rover rover(-20, -20, 5);
+	Grid grid(1000);
+	Rover rover(-20, -20, 0);
 	Terrain terrain;
 
 	/////////////////////////////////////////////////////////////////
 	Obstacle ob1(-5, -5, 0, 20);
 	Obstacle ob2(3, -2, 0, 50);
 	
+	/*cameraX = rover.getBackFrameX();
+	cameraY = rover.getBackFrameY();
+	cameraZ = rover.getBackFrameZ();*/
+
+	cameraX = 15.0f;
+	cameraY = -20.0f;
+	cameraZ = 0.0f;
+
 
 	//////////////////////////////////////////////////////////////
 
@@ -641,6 +654,25 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			zRot = GLfloat((const int)zRot % 360);
 
 			InvalidateRect(hWnd,NULL,FALSE);
+			}
+			if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
+				glLoadIdentity();
+				xRot = 0;
+				yRot = 0;
+				zRot = 0;
+
+				if (wParam == VK_DOWN)
+					gluLookAt(cameraX, cameraY + 20, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
+
+
+				if (wParam == VK_UP)
+					gluLookAt(cameraX, cameraY - 60, cameraZ + 40, cameraX, cameraY, cameraZ, 0, 0, 1);
+
+				if (wParam == VK_LEFT)
+					gluLookAt(cameraX + 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
+
+				if (wParam == VK_RIGHT)
+					gluLookAt(cameraX - 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
 			}
 			break;
 
