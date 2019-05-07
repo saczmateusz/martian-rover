@@ -5,6 +5,10 @@
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
 
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // Color Palette handle
 HPALETTE hPalette = NULL;
 
@@ -21,6 +25,7 @@ static float cameraX;
 static float cameraY;
 static float cameraZ;
 
+unsigned int mojaTekstura = 0;
 
 static GLfloat zoom;
 
@@ -44,8 +49,6 @@ BOOL APIENTRY AboutDlgProc (HWND hDlg, UINT message, UINT wParam, LONG lParam);
 
 // Set Pixel Format function - forward declaration
 void SetDCPixelFormat(HDC hDC);
-
-
 
 // Reduces a normal vector specified as a set of three coordinates,
 // to a unit normal vector of length one.
@@ -275,11 +278,12 @@ void RenderScene(void)
 	
 	Grid grid(1000);
 	Rover rover(-20, -20, 0);
-	Terrain terrain;
+	//Terrain terrain;
 
 	/////////////////////////////////////////////////////////////////
-	Obstacle ob1(-5, -5, 0, 20);
-	Obstacle ob2(3, -2, 0, 50);
+	
+	//Obstacle ob1(-5, -5, 0, 20);
+	//Obstacle ob2(3, -2, 0, 50);
 	
 	/*cameraX = rover.getBackFrameX();
 	cameraY = rover.getBackFrameY();
@@ -288,6 +292,26 @@ void RenderScene(void)
 	cameraX = 15.0f;
 	cameraY = -20.0f;
 	cameraZ = 0.0f;
+	///////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 3);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0, 0);  glVertex3f(-50, -50, 150);
+	glTexCoord2d(0, 1);  glVertex3f(-50, 50, 150);
+	glTexCoord2d(1, 0);  glVertex3f(50, 50, 150);
+	glTexCoord2d(1, 1);  glVertex3f(50, -50, 150);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+
+
+
+
 
 
 	//////////////////////////////////////////////////////////////
@@ -402,6 +426,33 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 	// Return the handle to the new palette
 	return hRetPal;
 	}
+
+
+unsigned int LoadTexture(const char* file, GLenum textureSlot)
+{
+	GLuint texHandle;
+	// Copy file to OpenGL
+	glGenTextures(textureSlot, &texHandle);
+	glBindTexture(GL_TEXTURE_2D, texHandle);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	const auto data = stbi_load(file, &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	}
+	else
+	{
+		// nie udalo sie zaladowac pliku
+	}
+	stbi_image_free(data);
+	return texHandle;
+}
+
+
 
 
 // Entry point of all Windows programs
@@ -536,7 +587,9 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			
 			if(bitmapData)
 			free(bitmapData);
+			///////////////////////////////////////////////////////////////////
 
+			mojaTekstura = LoadTexture("test2.png", 1);
 			// ustalenie sposobu mieszania tekstury z t³em
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);
 			break;

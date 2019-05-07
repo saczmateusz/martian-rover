@@ -25,6 +25,7 @@
 #include <gl\glu.h>             // GLU library
 #include <math.h>				// Define for sqrt
 #include <stdio.h>
+#include <iostream>
 #include "RESOURCE.H"           // About box resource identifiers.
 #include <vector>
 
