@@ -5,7 +5,7 @@
 class Obstacle
 {
 public:
-	Obstacle(float xx, float yy, float zz, float scale);
+	Obstacle(float xx, float yy, float zz, float scale, unsigned int texID);
 	~Obstacle();
 
 public:

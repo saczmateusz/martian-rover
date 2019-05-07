@@ -309,8 +309,8 @@ void RenderScene(void)
 
 	/////////////////////////////////////////////////////////////////
 	
-	Obstacle ob1(-5, -5, 0, 20, rock);
-	Obstacle ob2(3, -2, 0, 50, rock);
+	Obstacle ob1(-5, -5, 0.15, 30, rock);
+	Obstacle ob2(3, -2, 0.6, 50, rock);
 	
 	/*cameraX = rover.getBackFrameX();
 	cameraY = rover.getBackFrameY();

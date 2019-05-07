@@ -2,12 +2,16 @@
 
 
 
-Obstacle::Obstacle(float xx, float yy, float zz, float scale)
+Obstacle::Obstacle(float xx, float yy, float zz, float scale, unsigned int texID)
 {
 	glPushMatrix();
 
 	glRotatef(0, 0, 0, 0);
 	glScalef(scale , scale, scale);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texID);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (floor.LoadFile("malphite.obj"))
 	{
@@ -19,21 +23,21 @@ Obstacle::Obstacle(float xx, float yy, float zz, float scale)
 			{
 				glBegin(GL_TRIANGLES);
 				//double random = 0.5f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.55f - 0.5f)));
-				glColor3f(0.5f, 0.5f, 0.5f);
+				//glColor3f(0.5f, 0.5f, 0.5f);
 				//if (i == 0) glColor3f(0, 0, 1);
-				glVertex3f(
+				glTexCoord2d(0, 0); glVertex3f(
 					xx + curMesh.Vertices[curMesh.Indices[j]].Position.X,
 					yy + curMesh.Vertices[curMesh.Indices[j]].Position.Y,
 					zz + curMesh.Vertices[curMesh.Indices[j]].Position.Z
 				);
 
-				glVertex3f(
+				glTexCoord2d(0, 1); glVertex3f(
 					xx + curMesh.Vertices[curMesh.Indices[j + 1]].Position.X,
 					yy + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y,
 					zz + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Z
 				);
 
-				glVertex3f(
+				glTexCoord2d(1, 1); glVertex3f(
 					xx + curMesh.Vertices[curMesh.Indices[j + 2]].Position.X,
 					yy + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y,
 					zz + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Z
@@ -42,6 +46,7 @@ Obstacle::Obstacle(float xx, float yy, float zz, float scale)
 			}
 		}
 	}
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
