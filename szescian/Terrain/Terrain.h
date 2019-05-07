@@ -5,7 +5,7 @@
 class Terrain
 {
 public:
-	Terrain();
+	Terrain(unsigned int texID);
 	~Terrain();
 
 public:

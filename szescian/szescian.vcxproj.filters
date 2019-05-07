@@ -26,8 +26,8 @@
     <ClInclude Include="Terrain\Terrain.h" />
     <ClInclude Include="..\DEFINITIONS.h" />
     <ClInclude Include="..\RESOURCE.H" />
-    <ClInclude Include="..\include\OBJ_Loader.h" />
     <ClInclude Include="..\stb_image.h" />
+    <ClInclude Include="..\OBJ_Loader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\RESOURCE.APS">
