@@ -5,6 +5,10 @@
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
 
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // Color Palette handle
 HPALETTE hPalette = NULL;
 
@@ -21,11 +25,39 @@ static float cameraX;
 static float cameraY;
 static float cameraZ;
 
+unsigned int dust = 0;
+unsigned int banana = 0;
+unsigned int rock = 0;
+unsigned int smok = 0;
 
 static GLfloat zoom;
 
 static GLsizei lastHeight;
 static GLsizei lastWidth;
+
+unsigned int LoadTexture(const char* file, GLenum textureSlot)
+{
+	GLuint texHandle;
+	// Copy file to OpenGL
+	glGenTextures(textureSlot, &texHandle);
+	glBindTexture(GL_TEXTURE_2D, texHandle);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	const auto data = stbi_load(file, &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	}
+	else
+	{
+		//error
+	}
+	stbi_image_free(data);
+	return texHandle;
+}
 
 // Opis tekstury
 BITMAPINFOHEADER	bitmapInfoHeader;	// nag³ówek obrazu
@@ -44,8 +76,6 @@ BOOL APIENTRY AboutDlgProc (HWND hDlg, UINT message, UINT wParam, LONG lParam);
 
 // Set Pixel Format function - forward declaration
 void SetDCPixelFormat(HDC hDC);
-
-
 
 // Reduces a normal vector specified as a set of three coordinates,
 // to a unit normal vector of length one.
@@ -271,15 +301,16 @@ void RenderScene(void)
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
 	Grid grid(1000);
-	Rover rover(-20, -20, 0);
-	Terrain terrain;
+	Rover rover(-20, -20, 0, banana, smok);
+	Terrain terrain(dust);
 
 	/////////////////////////////////////////////////////////////////
-	Obstacle ob1(-5, -5, 0, 20);
-	Obstacle ob2(3, -2, 0, 50);
+	
+	Obstacle ob1(-5, -5, 0.15, 30, rock);
+	Obstacle ob2(3, -2, 0.6, 50, rock);
 	
 	/*cameraX = rover.getBackFrameX();
 	cameraY = rover.getBackFrameY();
@@ -288,6 +319,7 @@ void RenderScene(void)
 	cameraX = 15.0f;
 	cameraY = -20.0f;
 	cameraZ = 0.0f;
+	///////////////////////////////////////////////////////////////////////////////////
 
 
 	//////////////////////////////////////////////////////////////
@@ -402,7 +434,6 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 	// Return the handle to the new palette
 	return hRetPal;
 	}
-
 
 // Entry point of all Windows programs
 int APIENTRY WinMain(   HINSTANCE       hInst,
@@ -536,6 +567,12 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			
 			if(bitmapData)
 			free(bitmapData);
+			///////////////////////////////////////////////////////////////////
+
+			dust = LoadTexture("Textures/dust.png", 1);
+			banana = LoadTexture("Textures/banana.png", 1);
+			rock = LoadTexture("Textures/rock.png", 1);
+			smok = LoadTexture("Textures/smok.png", 1);
 
 			// ustalenie sposobu mieszania tekstury z t³em
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);

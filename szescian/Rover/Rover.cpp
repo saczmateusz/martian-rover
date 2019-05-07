@@ -2,9 +2,9 @@
 
 
 
-Rover::Rover(float x, float y, float z) :
+Rover::Rover(float x, float y, float z, unsigned int texID, unsigned int smokID) :
 	chassis(x, y, z),
-	platform(x, y, z)
+	platform(x, y, z, texID, smokID)
 {
 	GLfloat cl[] = { 0.3f, 0.3f, 0.3f };
 	GLfloat cn[] = { x, y + 10, z + 10 };

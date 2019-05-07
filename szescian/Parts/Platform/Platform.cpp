@@ -2,8 +2,8 @@
 
 
 
-Platform::Platform(float x, float y, float z)
-	: arm(x, y, z)
+Platform::Platform(float x, float y, float z, unsigned int texID, unsigned int smokID)
+	: arm(x, y, z, smokID)
 {
 	a[0] = x + 40;
 	a[1] = y + 40;
@@ -25,7 +25,7 @@ Platform::Platform(float x, float y, float z)
 	color[1] = 0.3f;
 	color[2] = 0.3f;
 
-	LeftFront.setParams(color, a, b, c, d, 5);
+	LeftFront.setParams(color, a, b, c, d, 5, texID);
 	LeftFront.drawCuboid(0, 0, 0, 0);
 
 	a[0] = x - 5;
@@ -34,7 +34,7 @@ Platform::Platform(float x, float y, float z)
 	c[0] = x + 30;
 	d[1] = y + 70;
 	d[0] = x;
-	RightFront.setParams(color, a, b, c, d, 5);
+	RightFront.setParams(color, a, b, c, d, 5, texID);
 	RightFront.drawCuboid(0, 0, 0, 0);
 
 	a[1] = y - 20;
@@ -45,14 +45,14 @@ Platform::Platform(float x, float y, float z)
 	c[0] = x + 30;
 	d[1] = y + 35;
 	d[0] = x - 5.5f;
-	RightBack.setParams(color, a, b, c, d, 5);
+	RightBack.setParams(color, a, b, c, d, 5, texID);
 	RightBack.drawCuboid(0, 0, 0, 0);
 
 	a[0] = x + 83;
 	b[0] = x + 40;
 	c[0] = x + 40;
 	d[0] = x + 75.5f;
-	LeftBack.setParams(color, a, b, c, d, 5);
+	LeftBack.setParams(color, a, b, c, d, 5, texID);
 	LeftBack.drawCuboid(0, 0, 0, 0);
 
 	GLfloat cl[] = { 0.5f, 0.5f, 0.5f };

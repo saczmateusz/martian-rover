@@ -6,7 +6,7 @@
 class Rover
 {
 public:
-	Rover(float x, float y, float z);
+	Rover(float x, float y, float z, unsigned int texID, unsigned int smokID);
 	~Rover();
 
 private:

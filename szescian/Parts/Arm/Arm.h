@@ -5,7 +5,7 @@
 class Arm
 {
 public:
-	Arm(float x, float y, float z);
+	Arm(float x, float y, float z, unsigned int smokID);
 	~Arm();
 	Cylinder skillet;
 	Cylinder bush;

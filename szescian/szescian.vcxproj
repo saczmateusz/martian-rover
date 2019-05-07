@@ -166,8 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DEFINITIONS.h" />
-    <ClInclude Include="..\include\OBJ_Loader.h" />
+    <ClInclude Include="..\OBJ_Loader.h" />
     <ClInclude Include="..\RESOURCE.H" />
+    <ClInclude Include="..\stb_image.h" />
     <ClInclude Include="Cone\Cone.h" />
     <ClInclude Include="Obstacle\Obstacle.h" />
     <ClInclude Include="Parts\Arm\Arm.h" />
