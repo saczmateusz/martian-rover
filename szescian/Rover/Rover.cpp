@@ -30,17 +30,26 @@ Rover::~Rover()
 {
 }
 
-void Rover::drawRover()
+void Rover::drawRover(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 {
 	for (auto &wheel : wheels)
 	{
 		wheel.drawCylinder(0, 0, 0, 0);
 	}
 	chassis.drawChassis();
-	platform.drawPlatform();
+	platform.drawPlatform(rot, xdg, ydg, zdg);
 }
 
 void Rover::setTextures(unsigned int texID, unsigned int smokID)
 {
 	platform.setTextures(texID, smokID);
+}
+
+vector<float> Rover::getPos()
+{
+	vector<float> pos;
+	pos.push_back(posX + 35.0);
+	pos.push_back(posY + 30.0);
+	pos.push_back(posZ);
+	return pos;
 }
