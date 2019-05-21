@@ -6,8 +6,10 @@ class Grid
 public:
 	Grid(int size);
 	~Grid();
+	void drawGrid();
 
 private:
-	void DrawGrid(int HALF_GRID_SIZE);
+	int size;
+
 };
 

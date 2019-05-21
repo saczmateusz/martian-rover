@@ -12,5 +12,9 @@ public:
 	GLfloat c[3];
 	GLfloat d[3];
 	GLfloat color[3];
+	void drawFrame();
+	float posX;
+	float posY;
+	float posZ;
 };
 

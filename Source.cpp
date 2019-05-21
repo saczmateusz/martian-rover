@@ -13,22 +13,39 @@
 HPALETTE hPalette = NULL;
 
 // Application name and instance storeage
-static LPCTSTR lpszAppName = "GL Template";
+static LPCTSTR lpszAppName = "Martian rover";
 static HINSTANCE hInstance;
 
 // Rotation amounts
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
-static GLfloat zRot = 0.0f;
+static GLfloat zRot = 0.0f; 
+
+static GLfloat const_velocity = 5.0f;
+static GLfloat velocity = 0.0f;
+static GLfloat roverRot = 0.0f;
+static GLfloat engineRot = 0.0f;
+static GLfloat rotSpeed = 5.0f;
 
 static float cameraX;
 static float cameraY;
 static float cameraZ;
 
+static GLfloat posX = 0.0f;
+static GLfloat posY = 0.0f;
+static GLfloat posZ = 0.0f;
+
 unsigned int dust = 0;
 unsigned int banana = 0;
 unsigned int rock = 0;
 unsigned int smok = 0;
+
+
+Grid grid(1000);
+Rover rover(0, 0, 0);
+Terrain terrain;
+Obstacle ob1(-6, -6, 0.15f, 30);
+Obstacle ob2(4, -5, 0.6f, 50);
 
 static GLfloat zoom;
 
@@ -151,15 +168,15 @@ void ChangeSize(GLsizei w, GLsizei h)
 	glLoadIdentity();
 
 	// Establish clipping volume (left, right, bottom, top, near, far)
-    if (w <= h) 
+    /*if (w <= h) 
 		glOrtho (-nRange, nRange, -nRange*h/w, nRange*h/w, -nRange, nRange);
     else 
 		glOrtho (-nRange*w/h, nRange*w/h, -nRange, nRange, -nRange, nRange);
-
+*/
 	// Establish perspective: 
-	/*
-	gluPerspective(60.0f,fAspect,1.0,400);
-	*/
+	
+	gluPerspective(60.0f,fAspect,1.0,2000.0f);
+
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -303,22 +320,54 @@ void RenderScene(void)
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	Grid grid(1000);
-	Rover rover(-20, -20, 0, banana, smok);
-	Terrain terrain(dust);
+	vector<float> roverPos = rover.getPos();
 
-	/////////////////////////////////////////////////////////////////
-	
-	Obstacle ob1(-5, -5, 0.15, 30, rock);
-	Obstacle ob2(3, -2, 0.6, 50, rock);
-	
-	/*cameraX = rover.getBackFrameX();
-	cameraY = rover.getBackFrameY();
-	cameraZ = rover.getBackFrameZ();*/
+	//posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
+	//posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
-	cameraX = 15.0f;
-	cameraY = -20.0f;
-	cameraZ = 0.0f;
+	posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
+	posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
+
+
+	gluLookAt(
+		posX+35, // eye X
+		posY+40, // eye Y
+		posZ + 350, // eye Z
+		posX+35,// center X
+		posY+40, // center Y
+		posZ, // center Z
+		0.0,
+		1.0,
+		0.0
+	);
+	glPushMatrix();
+	
+	glTranslatef(posX, posY, posZ); // translacja o wektory przemieszczenia obliczone wyzej
+	
+	velocity = 0;
+
+
+	glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
+	glRotatef(roverRot, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
+	glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
+
+	rover.drawRover(engineRot, 0, 0, 1);
+	glPopMatrix();
+
+	
+	grid.drawGrid();
+	terrain.drawTerrain();
+
+
+	ob1.drawObstacle();
+	ob2.drawObstacle();
+	
+
+	/*
+	cameraX = roverPos[0];
+	cameraY = roverPos[1];
+	cameraZ = roverPos[2];
+*/
 	///////////////////////////////////////////////////////////////////////////////////
 
 
@@ -476,7 +525,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				50, 50,
+				-1400, 50,
 				800, 800,
 				NULL,
 				NULL,
@@ -573,6 +622,10 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			banana = LoadTexture("Textures/banana.png", 1);
 			rock = LoadTexture("Textures/rock.png", 1);
 			smok = LoadTexture("Textures/smok.png", 1);
+			terrain.setTexture(dust);
+			rover.setTextures(banana, smok);
+			ob1.setTexture(rock);
+			ob2.setTexture(rock);
 
 			// ustalenie sposobu mieszania tekstury z t³em
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);
@@ -609,9 +662,8 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			RenderScene();
 
 			SwapBuffers(hDC);
-
 			// Validate the newly painted client area
-			ValidateRect(hWnd,NULL);
+			InvalidateRect(hWnd, NULL, FALSE);
 			}
 			break;
 
@@ -685,6 +737,24 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 
 			if (wParam == VK_ADD)
 				zoom -= 20.0f;
+
+			if (wParam == 'A')
+				roverRot += rotSpeed;
+
+			if (wParam == 'D')
+				roverRot -= rotSpeed;
+
+			if (wParam == 'Q') // skret w lewo
+				engineRot += rotSpeed;
+
+			if (wParam == 'E') // skret w prawo
+				engineRot -= rotSpeed;
+
+			if (wParam == 'W') // do przodu
+				velocity = const_velocity;
+
+			if (wParam == 'S') // do tylu
+				velocity = -const_velocity;
 
 			xRot = GLfloat((const int)xRot % 360);
 			yRot = GLfloat((const int)yRot % 360);

@@ -2,16 +2,35 @@
 
 
 
-Obstacle::Obstacle(float xx, float yy, float zz, float scale, unsigned int texID)
+Obstacle::Obstacle(float xx, float yy, float zz, float scale)
+{
+	this->scale = scale;
+	posX = xx;
+	posY = yy;
+	posZ = zz;
+}
+
+
+Obstacle::~Obstacle()
+{
+}
+
+void Obstacle::setTexture(unsigned int texID)
+{
+	texture = texID;
+}
+
+void Obstacle::drawObstacle()
 {
 	glPushMatrix();
 
 	glRotatef(0, 0, 0, 0);
-	glScalef(scale , scale, scale);
+	glScalef(scale, scale, scale);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texID);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	if (floor.LoadFile("malphite.obj"))
 	{
@@ -23,24 +42,24 @@ Obstacle::Obstacle(float xx, float yy, float zz, float scale, unsigned int texID
 			{
 				glBegin(GL_TRIANGLES);
 				//double random = 0.5f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.55f - 0.5f)));
-				//glColor3f(0.5f, 0.5f, 0.5f);
+				glColor3f(0.5f, 0.5f, 0.5f);
 				//if (i == 0) glColor3f(0, 0, 1);
 				glTexCoord2d(0, 0); glVertex3f(
-					xx + curMesh.Vertices[curMesh.Indices[j]].Position.X,
-					yy + curMesh.Vertices[curMesh.Indices[j]].Position.Y,
-					zz + curMesh.Vertices[curMesh.Indices[j]].Position.Z
+					posX + curMesh.Vertices[curMesh.Indices[j]].Position.X,
+					posY + curMesh.Vertices[curMesh.Indices[j]].Position.Y,
+					posZ + curMesh.Vertices[curMesh.Indices[j]].Position.Z
 				);
 
 				glTexCoord2d(0, 1); glVertex3f(
-					xx + curMesh.Vertices[curMesh.Indices[j + 1]].Position.X,
-					yy + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y,
-					zz + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Z
+					posX + curMesh.Vertices[curMesh.Indices[j + 1]].Position.X,
+					posY + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y,
+					posZ + curMesh.Vertices[curMesh.Indices[j + 1]].Position.Z
 				);
 
 				glTexCoord2d(1, 1); glVertex3f(
-					xx + curMesh.Vertices[curMesh.Indices[j + 2]].Position.X,
-					yy + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y,
-					zz + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Z
+					posX + curMesh.Vertices[curMesh.Indices[j + 2]].Position.X,
+					posY + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y,
+					posZ + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Z
 				);
 				glEnd();
 			}
@@ -49,9 +68,4 @@ Obstacle::Obstacle(float xx, float yy, float zz, float scale, unsigned int texID
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
-}
-
-
-Obstacle::~Obstacle()
-{
 }

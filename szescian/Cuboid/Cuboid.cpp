@@ -37,6 +37,8 @@ void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	GLfloat j[3] = { d[0], d[1], d[2] + height };
 	if(tex == 0)
 		glColor3fv(color);
+	else
+		glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_POLYGON);
 	glTexCoord2d(0, 0); glVertex3fv(a);
 	glTexCoord2d(0, 1); glVertex3fv(b);

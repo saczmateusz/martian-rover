@@ -8,9 +8,12 @@
 class Platform
 {
 public:
-	Platform(float x, float y, float z, unsigned int texID, unsigned int smokID);
+	Platform(float x, float y, float z);
 	~Platform();
-private:
+	void setTextures(unsigned int texID, unsigned int smokID);
+	void drawPlatform(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg);
+
+public:
 	GLfloat a[3];
 	GLfloat b[3];
 	GLfloat c[3];
@@ -24,5 +27,10 @@ private:
 	Cone engine;
 	Cylinder engineCore;
 	Cone thrust;
+	unsigned int banana;
+	unsigned int smok;
+	float posX;
+	float posY;
+	float posZ;
 };
 
