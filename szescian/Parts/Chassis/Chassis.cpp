@@ -34,20 +34,6 @@ Chassis::~Chassis()
 	
 }
 
-float Chassis::getPositionX()
-{
-	return posX;
-}
-
-float Chassis::getPositionY()
-{
-	return posY;
-}
-
-float Chassis::getPositionZ()
-{
-	return posZ;
-}
 
 void Chassis::drawChassis()
 {

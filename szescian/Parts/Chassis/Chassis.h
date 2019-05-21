@@ -8,9 +8,6 @@ class Chassis
 public:
 	Chassis(float x, float y, float z);
 	~Chassis();
-	float getPositionX();
-	float getPositionY();
-	float getPositionZ();
 	void drawChassis();
 
 public:

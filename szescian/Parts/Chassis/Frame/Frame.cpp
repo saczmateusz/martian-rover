@@ -35,20 +35,6 @@ Frame::~Frame()
 {
 }
 
-float Frame::getPositionX()
-{
-	return posX;
-}
-
-float Frame::getPositionY()
-{
-	return posY;
-}
-
-float Frame::getPositionZ()
-{
-	return posZ;
-}
 
 void Frame::drawFrame()
 {
