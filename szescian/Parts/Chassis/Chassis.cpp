@@ -41,4 +41,6 @@ void Chassis::drawChassis()
 	{
 		axle.drawCylinder(0, 0, 0, 0);
 	}
+
+	frame.drawFrame();
 }

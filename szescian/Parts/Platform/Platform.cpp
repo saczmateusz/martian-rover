@@ -86,7 +86,6 @@ void Platform::setTextures(unsigned int texID, unsigned int smokID)
 
 void Platform::drawPlatform()
 {
-	
 	LeftFront.drawCuboid(0, 0, 0, 0);
 	RightFront.drawCuboid(0, 0, 0, 0);
 	RightBack.drawCuboid(0, 0, 0, 0);
@@ -94,4 +93,6 @@ void Platform::drawPlatform()
 	engine.drawCone(-90, 1, 0, 0);
 	engineCore.drawCylinder(-90, 0, 0, 1);
 	thrust.drawCone(90, 1, 0, 0);
+
+	arm.drawArm();
 }

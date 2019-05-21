@@ -2,9 +2,9 @@
 
 
 
-Rover::Rover(float x, float y, float z, unsigned int texID, unsigned int smokID) :
+Rover::Rover(float x, float y, float z) :
 	chassis(x, y, z),
-	platform(x, y, z, texID, smokID)
+	platform(x, y, z)
 {
 	GLfloat cl[] = { 0.3f, 0.3f, 0.3f };
 	GLfloat cn[] = { x, y + 10, z + 10 };
@@ -23,14 +23,24 @@ Rover::Rover(float x, float y, float z, unsigned int texID, unsigned int smokID)
 		wheels.push_back(wheel);
 		cn[1] += 30;
 	}
-
-	for (auto &wheel : wheels)
-	{
-		wheel.drawCylinder(0, 0, 0, 0);
-	}
 }
 
 
 Rover::~Rover()
 {
+}
+
+void Rover::drawRover()
+{
+	for (auto &wheel : wheels)
+	{
+		wheel.drawCylinder(0, 0, 0, 0);
+	}
+	chassis.drawChassis();
+	platform.drawPlatform();
+}
+
+void Rover::setTextures(unsigned int texID, unsigned int smokID)
+{
+	platform.setTextures(texID, smokID);
 }
