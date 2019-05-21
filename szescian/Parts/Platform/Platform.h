@@ -11,7 +11,7 @@ public:
 	Platform(float x, float y, float z);
 	~Platform();
 	void setTextures(unsigned int texID, unsigned int smokID);
-	void drawPlatform();
+	void drawPlatform(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg);
 
 public:
 	GLfloat a[3];
