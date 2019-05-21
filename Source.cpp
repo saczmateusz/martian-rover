@@ -30,6 +30,12 @@ unsigned int banana = 0;
 unsigned int rock = 0;
 unsigned int smok = 0;
 
+Grid grid(1000);
+Rover rover(-20, -20, 0);
+Terrain terrain;
+Obstacle ob1(-5, -5, 0.15f, 30);
+Obstacle ob2(3, -2, 0.6f, 50);
+
 static GLfloat zoom;
 
 static GLsizei lastHeight;
@@ -303,15 +309,13 @@ void RenderScene(void)
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	Grid grid(1000);
-	Rover rover(-20, -20, 0, banana, smok);
-	Terrain terrain(dust);
+	grid.drawGrid();
+	terrain.drawTerrain();
+	rover.drawRover();
+	ob1.drawObstacle();
+	ob2.drawObstacle();
+	
 
-	/////////////////////////////////////////////////////////////////
-	
-	Obstacle ob1(-5, -5, 0.15, 30, rock);
-	Obstacle ob2(3, -2, 0.6, 50, rock);
-	
 	/*cameraX = rover.getBackFrameX();
 	cameraY = rover.getBackFrameY();
 	cameraZ = rover.getBackFrameZ();*/
@@ -476,7 +480,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				50, 50,
+				-1400, 50,
 				800, 800,
 				NULL,
 				NULL,
@@ -573,6 +577,10 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			banana = LoadTexture("Textures/banana.png", 1);
 			rock = LoadTexture("Textures/rock.png", 1);
 			smok = LoadTexture("Textures/smok.png", 1);
+			terrain.setTexture(dust);
+			rover.setTextures(banana, smok);
+			ob1.setTexture(rock);
+			ob2.setTexture(rock);
 
 			// ustalenie sposobu mieszania tekstury z t³em
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);
