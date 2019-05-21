@@ -8,9 +8,16 @@ class Chassis
 public:
 	Chassis(float x, float y, float z);
 	~Chassis();
+	float getPositionX();
+	float getPositionY();
+	float getPositionZ();
+	void drawChassis();
 
-private:
+public:
 	Frame frame;
 	vector<Cylinder> axles;
+	float posX;
+	float posY;
+	float posZ;
 };
 
