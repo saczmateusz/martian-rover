@@ -5,10 +5,14 @@
 class Terrain
 {
 public:
-	Terrain(unsigned int texID);
+	Terrain();
 	~Terrain();
+	void drawTerrain();
+	void setTexture(unsigned int texID);
 
 public:
 	objl::Loader floor;
+	unsigned int texture;
+
 };
 
