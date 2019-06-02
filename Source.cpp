@@ -21,11 +21,10 @@ static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 static GLfloat zRot = 0.0f; 
 
-static GLfloat const_velocity = 5.0f;
 static GLfloat velocity = 0.0f;
-static GLfloat roverRot = 0.0f;
 static GLfloat engineRot = 0.0f;
-static GLfloat rotSpeed = 5.0f;
+static GLfloat rotSpeed = 1.0f; //15.0f kryha
+static GLfloat ErotSpeed = 4.0f; //15.0f kryha
 
 static float cameraX;
 static float cameraY;
@@ -39,6 +38,20 @@ unsigned int dust = 0;
 unsigned int banana = 0;
 unsigned int rock = 0;
 unsigned int smok = 0;
+
+//new ones
+static GLfloat rotAngle = 0.0f;
+static GLfloat swingRadius = 0.0f;
+
+static GLfloat const_velocity = 1.0f; //5.0f ja
+static GLfloat velocityL = 0.0f;
+static GLfloat velocityR = 0.0f;
+static GLfloat momentumConst = 0.2*const_velocity;
+bool velocityUpdate = 0;
+//std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f,0.0f };
+std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f };
+std::vector<GLfloat> midPointLocationScaled{ 0,0,0 };
+
 
 
 Grid grid(1000);
@@ -309,29 +322,51 @@ void RenderScene(void)
 	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 	glRotatef(zRot, 0.0f, 0.0f, 1.0f);
+	glRotatef(zoom, 0, 0, 0);
 
 	/////////////////////////////////////////////////////////////////
 	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
 	/////////////////////////////////////////////////////////////////
 	
-	glRotatef(zoom, 0, 0, 0);
+
+	if (velocityUpdate)
+	{
+		velocity = (velocityL + velocityR) / 2;
+		velocityUpdate = 0;
+	}
+
+	if (velocityL != velocityR)
+	{
+		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR))) // to je swing radius a nie swing angle xD
+			rotAngle = atan2(swingRadius, 0) - atan2(swingRadius, velocity);
+		//rotAngle = asin(velocity / swingRadius);
+
+	}
+	else if (velocityL == 0)
+		rotAngle = 0;
+
+
+
+
+
+
 	
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	vector<float> roverPos = rover.getPos();
+	//vector<float> roverPos = rover.getPos();
 
 	//posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
 	//posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
-	posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
-	posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
+	posX += velocity * sin(-rotAngle); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
+	posY += velocity * cos(rotAngle);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
 
 	gluLookAt(
 		posX+35, // eye X
-		posY+40, // eye Y
+		posY-200, // eye Y
 		posZ + 350, // eye Z
 		posX+35,// center X
 		posY+40, // center Y
@@ -344,12 +379,39 @@ void RenderScene(void)
 	
 	glTranslatef(posX, posY, posZ); // translacja o wektory przemieszczenia obliczone wyzej
 	
-	velocity = 0;
+	if (velocity > 0)
+	{
+		if (velocity - momentumConst > 0)
+			velocity -= momentumConst;
+		else velocityL = velocityR = velocity = 0;
+		if (engineRot < 0)
+		{
+			engineRot += rotSpeed;
+		}
+		else if (engineRot > 0)
+		{
+			engineRot -= rotSpeed;
+		}
+	}
+	else
+	{
+		if (velocity + momentumConst < 0)
+			velocity += momentumConst;
+		else velocityL = velocityR = velocity = 0;
+	}
 
 
-	glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
-	glRotatef(roverRot, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
-	glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
+	//glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
+	//glRotatef(rotAngle, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
+	//glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
+
+
+	midPointLocationScaled = { midPointLocation[0] / 2,midPointLocation[1] / 2 ,midPointLocation[2] }; // trzeba podzieliæ przez 2 bo skalujemy razy 0.5 
+
+	glTranslatef(midPointLocationScaled[0], midPointLocationScaled[1], midPointLocationScaled[2]); // powrót do pozycji wyjœciowej
+	glRotatef(rotAngle * 180 / GL_PI, 0.0f, 0.0f, 1.0f); // obrót wokó³ punktu 0,0 po osi Z
+	glTranslatef(-midPointLocationScaled[0], -midPointLocationScaled[1], -midPointLocationScaled[2]); // translacja do punktu 0,0
+
 
 	rover.drawRover(engineRot, 0, 0, 1);
 	glPopMatrix();
@@ -525,7 +587,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				-1400, 50,
+				50, 50,
 				800, 800,
 				NULL,
 				NULL,
@@ -738,31 +800,119 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			if (wParam == VK_ADD)
 				zoom -= 20.0f;
 
-			if (wParam == 'A')
-				roverRot += rotSpeed;
+			//if (wParam == 'A')
+			//	rotAngle+= rotSpeed;
 
-			if (wParam == 'D')
-				roverRot -= rotSpeed;
+			//if (wParam == 'D')
+			//	rotAngle -= rotSpeed;
 
-			if (wParam == 'Q') // skret w lewo
-				engineRot += rotSpeed;
+			//if (wParam == 'Q') // skret w lewo
+			//	engineRot += rotSpeed;
 
-			if (wParam == 'E') // skret w prawo
-				engineRot -= rotSpeed;
+			//if (wParam == 'E') // skret w prawo
+			//	engineRot -= rotSpeed;
 
+			//if (wParam == 'W') // do przodu
+			//	velocity = const_velocity;
+
+			//if (wParam == 'S') // do tylu
+			//	velocity = -const_velocity;
+
+			//xRot = GLfloat((const int)xRot % 360);
+			//yRot = GLfloat((const int)yRot % 360);
+			//zRot = GLfloat((const int)zRot % 360);
+
+			//InvalidateRect(hWnd,NULL,FALSE);
+			//}
+
+
+
+			if (wParam == 'R') // skret w prawo
+			{
+				posX = posY = velocityL = velocityR = velocity = 0;
+			}
 			if (wParam == 'W') // do przodu
-				velocity = const_velocity;
+			{
+				if (velocity != 0)
+				{
+					velocityL += const_velocity;
+					velocityR -= const_velocity;
+					if (engineRot >= -30.0f)
+					{
+						engineRot -= ErotSpeed;
+					}
+					velocityUpdate = 1;
+				}
+			}
 
 			if (wParam == 'S') // do tylu
-				velocity = -const_velocity;
-
-			xRot = GLfloat((const int)xRot % 360);
-			yRot = GLfloat((const int)yRot % 360);
-			zRot = GLfloat((const int)zRot % 360);
-
-			InvalidateRect(hWnd,NULL,FALSE);
+			{
+				if (velocity != 0)
+				{
+					velocityL -= const_velocity;
+					velocityR += const_velocity/2;
+					velocityUpdate = 1;
+				}
 			}
-			if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
+
+			if (wParam == 'E') // do przodu
+			{
+				if (velocity != 0)
+				{
+					velocityR += const_velocity;
+					velocityL -= const_velocity;
+					if (engineRot <= 30.0f)
+					{
+						engineRot += ErotSpeed;
+					}
+					velocityUpdate = 1;
+				}
+			}
+
+			if (wParam == 'D') // do tylu
+			{
+				if (velocity != 0)
+				{
+					velocityR -= const_velocity;
+					velocityL += const_velocity/2;
+					velocityUpdate = 1;
+				}
+			}
+			if (wParam == VK_CONTROL) // w gore
+			{
+				posZ -= const_velocity;
+				velocityUpdate = 1;
+			}
+			if (wParam == VK_SHIFT) // w dol
+			{
+				posZ += const_velocity;
+				velocityUpdate = 1;
+			}
+			if (wParam == VK_SPACE)
+			{
+				velocityR = velocityL = 0;
+				velocityUpdate = 1;
+			}
+
+			if (wParam == VK_UP)
+			{
+				velocityL += const_velocity;
+				velocityR += const_velocity;
+				velocityUpdate = 1;
+			}
+
+			if (wParam == VK_DOWN)
+			{
+				velocityL -= const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
+			}
+			InvalidateRect(hWnd, NULL, FALSE);
+			}
+
+
+
+			/*if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
 				glLoadIdentity();
 				xRot = 0;
 				yRot = 0;
@@ -780,7 +930,7 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 
 				if (wParam == VK_RIGHT)
 					gluLookAt(cameraX - 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
-			}
+			}*/
 			break;
 
 		// A menu command
