@@ -4,6 +4,7 @@
 #include "szescian/Cone/Cone.h"
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
+#include <AntTweakBar.h>
 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -33,6 +34,8 @@ static float cameraZ;
 static GLfloat posX = 0.0f;
 static GLfloat posY = 0.0f;
 static GLfloat posZ = 0.0f;
+
+GLfloat batteryLife = 100.0;
 
 unsigned int dust = 0;
 unsigned int banana = 0;
@@ -431,6 +434,27 @@ void RenderScene(void)
 	cameraZ = roverPos[2];
 */
 	///////////////////////////////////////////////////////////////////////////////////
+
+
+	TwInit(TW_OPENGL, NULL);
+	TwBar* bar = TwNewBar("OGLDEV");
+	TwWindowSize(800, 800);
+	TwAddButton(bar, "Martian rover", NULL, NULL, "");
+	TwAddVarRO(bar, "Velocity", TW_TYPE_FLOAT, &velocity, "rover velocity");
+	TwAddVarRO(bar, "Velocity L", TW_TYPE_FLOAT, &velocityL, "v1");
+	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "v2");
+	TwAddSeparator(bar, "Battery life", "battery");
+	TwAddVarRO(bar, "Battery life %", TW_TYPE_FLOAT, &batteryLife, "battery");
+
+
+	TwDraw();
+	TwRefreshBar(bar);
+
+	batteryLife -= 0.01;
+
+
+
+
 
 
 	//////////////////////////////////////////////////////////////
@@ -851,6 +875,10 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 				{
 					velocityL -= const_velocity;
 					velocityR += const_velocity/2;
+					if (engineRot >= -30.0f)
+					{
+						engineRot -= ErotSpeed;
+					}
 					velocityUpdate = 1;
 				}
 			}
@@ -875,6 +903,10 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 				{
 					velocityR -= const_velocity;
 					velocityL += const_velocity/2;
+					if (engineRot <= 30.0f)
+					{
+						engineRot += ErotSpeed;
+					}
 					velocityUpdate = 1;
 				}
 			}
