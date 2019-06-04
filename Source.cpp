@@ -27,6 +27,11 @@ static GLfloat engineRot = 0.0f;
 static GLfloat rotSpeed = 1.0f; //15.0f kryha
 static GLfloat ErotSpeed = 4.0f; //15.0f kryha
 
+static GLfloat roverRadius = 40.0f;
+vector<float> roverPos;
+
+
+
 static float cameraX;
 static float cameraY;
 static float cameraZ;
@@ -358,7 +363,7 @@ void RenderScene(void)
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	//vector<float> roverPos = rover.getPos();
+	roverPos = rover.getPos();
 
 	//posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
 	//posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
@@ -445,6 +450,10 @@ void RenderScene(void)
 	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "v2");
 	TwAddSeparator(bar, "Battery life", "battery");
 	TwAddVarRO(bar, "Battery life %", TW_TYPE_FLOAT, &batteryLife, "battery");
+	TwAddSeparator(bar, "Position", "pos");
+	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &roverPos[0], "x");
+	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &roverPos[1], "y");
+	TwAddVarRO(bar, "Z", TW_TYPE_FLOAT, &roverPos[2], "z");
 
 
 	TwDraw();
