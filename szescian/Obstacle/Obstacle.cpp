@@ -62,10 +62,32 @@ void Obstacle::drawObstacle()
 					posZ + curMesh.Vertices[curMesh.Indices[j + 2]].Position.Z
 				);
 				glEnd();
+				BB[0] = max4(curMesh.Vertices[curMesh.Indices[j]].Position.X, curMesh.Vertices[curMesh.Indices[j + 1]].Position.X, curMesh.Vertices[curMesh.Indices[j + 2]].Position.X, BB[0]);
+				BB[1] = max4(curMesh.Vertices[curMesh.Indices[j]].Position.Y, curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y, curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y, BB[1]);
+				BB[2] = min4(curMesh.Vertices[curMesh.Indices[j]].Position.X, curMesh.Vertices[curMesh.Indices[j + 1]].Position.X, curMesh.Vertices[curMesh.Indices[j + 2]].Position.X, BB[2]);
+				BB[3] = min4(curMesh.Vertices[curMesh.Indices[j]].Position.Y, curMesh.Vertices[curMesh.Indices[j + 1]].Position.Y, curMesh.Vertices[curMesh.Indices[j + 2]].Position.Y, BB[3]);
 			}
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
+}
+
+
+GLfloat Obstacle::max4(GLfloat a, GLfloat b, GLfloat c, GLfloat d)
+{
+	return std::max(a, std::max(b, std::max(c, d)));
+}
+
+
+GLfloat Obstacle::min4(GLfloat a, GLfloat b, GLfloat c, GLfloat d)
+{
+	return std::min(a, std::min(b, std::min(c, d)));
+}
+
+
+GLfloat * Obstacle::getBB()
+{
+	return BB;
 }
