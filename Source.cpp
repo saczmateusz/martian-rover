@@ -4,6 +4,7 @@
 #include "szescian/Cone/Cone.h"
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
+#include <AntTweakBar.h>
 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -21,11 +22,18 @@ static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 static GLfloat zRot = 0.0f; 
 
-static GLfloat const_velocity = 5.0f;
 static GLfloat velocity = 0.0f;
-static GLfloat roverRot = 0.0f;
 static GLfloat engineRot = 0.0f;
-static GLfloat rotSpeed = 5.0f;
+static GLfloat rotSpeed = 15.0f; //15.0f kryha
+static GLfloat ErotSpeed = 15.0f; //15.0f kryha
+
+static GLfloat roverRadius = 40.0f;
+vector<float> roverPos;
+
+GLfloat obs1[4] = { -205.0, -145.0, -155.0, -205.0 };
+GLfloat obs2[4] = { 50, 355,  145, 265 };
+
+bool collision[2] = { 0, 0 };
 
 static float cameraX;
 static float cameraY;
@@ -35,17 +43,38 @@ static GLfloat posX = 0.0f;
 static GLfloat posY = 0.0f;
 static GLfloat posZ = 0.0f;
 
+
+GLfloat mrv[4] = { posX - 25, posY + 110, posX + 95, posY - 20 };
+
+
+GLfloat batteryLife = 100.0;
+
 unsigned int dust = 0;
 unsigned int banana = 0;
 unsigned int rock = 0;
 unsigned int smok = 0;
+
+//new ones
+static GLfloat rotAngle = 0.0f;
+static GLfloat rotAngleDeg = 0.0f;
+static GLfloat swingRadius = 0.0f;
+
+static GLfloat const_velocity = 0.7f; //5.0f ja
+static GLfloat velocityL = 0.0f;
+static GLfloat velocityR = 0.0f;
+static GLfloat momentumConst = 0.2*const_velocity;
+bool velocityUpdate = 0;
+//std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f,0.0f };
+std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f };
+std::vector<GLfloat> midPointLocationScaled{ 0,0,0 };
+
 
 
 Grid grid(1000);
 Rover rover(0, 0, 0);
 Terrain terrain;
 Obstacle ob1(-6, -6, 0.15f, 30);
-Obstacle ob2(4, -5, 0.6f, 50);
+Obstacle ob2(2, 6, 0.6f, 50);
 
 static GLfloat zoom;
 
@@ -227,6 +256,13 @@ void SetupRC()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f );
 	// Black brush
 	glColor3f(0.0,0.0,0.0);
+
+
+	midPointLocation = rover.getPos();
+
+	
+
+
 	}
 
 // LoadBitmapFile
@@ -306,32 +342,44 @@ void RenderScene(void)
 
 	// Save the matrix state and do the rotations
 	glPushMatrix();
+
 	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 	glRotatef(zRot, 0.0f, 0.0f, 1.0f);
-
-	/////////////////////////////////////////////////////////////////
-	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
-	/////////////////////////////////////////////////////////////////
-	
 	glRotatef(zoom, 0, 0, 0);
 	
+	roverPos = rover.getPos();
+
+	if (velocityUpdate)
+	{
+		velocity = (velocityL + velocityR) / 2;
+		velocityUpdate = 0;
+	}
+
+	if (velocityL != velocityR)
+	{
+		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR))) // to je swing radius a nie swing angle xD
+			rotAngle += atan2(swingRadius, 0) - atan2(swingRadius, velocity);
+		//rotAngle = asin(velocity / swingRadius);
+
+	}
+	//else if (velocityL == 0)
+		//rotAngle = 0;
+
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	
-	vector<float> roverPos = rover.getPos();
-
 	//posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
 	//posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
-	posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
-	posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
+	posX += velocity * sin(-rotAngle); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
+	posY += velocity * cos(rotAngle);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
 
 	gluLookAt(
 		posX+35, // eye X
-		posY+40, // eye Y
+		posY-200, // eye Y
 		posZ + 350, // eye Z
 		posX+35,// center X
 		posY+40, // center Y
@@ -340,36 +388,164 @@ void RenderScene(void)
 		1.0,
 		0.0
 	);
+
 	glPushMatrix();
 	
 	glTranslatef(posX, posY, posZ); // translacja o wektory przemieszczenia obliczone wyzej
 	
-	velocity = 0;
+	if (!velocityUpdate)
+	{
+		if (velocityL > 0)
+		{
+			if (velocityL - momentumConst > 0)
+				velocityL -= momentumConst;
+			else velocityL = 0;
+		}
+		else
+		{
+			if (velocityL + momentumConst < 0)
+				velocityL += momentumConst;
+			else velocityL = 0;
+		}
 
 
-	glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
-	glRotatef(roverRot, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
-	glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
+		if (velocityR > 0)
+		{
+			if (velocityR - momentumConst > 0)
+				velocityR -= momentumConst;
+			else velocityR = 0;
+		}
+		else
+		{
+			if (velocityR + momentumConst < 0)
+				velocityR += momentumConst;
+			else velocityR = 0;
+		}
+		velocity = (velocityL + velocityR) / 2;
+		if (engineRot < 0)
+		{
+			engineRot += ErotSpeed / 2;
+		}
+		else if (engineRot > 0)
+		{
+			engineRot -= ErotSpeed / 2;
+		}
+	}
+
+	/*if (velocity > 0)     to jest poprzedni kod
+	{
+		if (velocity - momentumConst > 0)
+			velocity -= momentumConst;
+		else velocityL = velocityR = velocity = 0;
+		if (engineRot < 0)
+		{
+			engineRot += rotSpeed;
+		}
+		else if (engineRot > 0)
+		{
+			engineRot -= rotSpeed;
+		}
+	}
+	else
+	{
+		if (velocity + momentumConst < 0)
+			velocity += momentumConst;
+		else velocityL = velocityR = velocity = 0;
+	}*/
+
+
+	//glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
+	//glRotatef(rotAngle, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
+	//glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
+
+
+	midPointLocationScaled = { midPointLocation[0], midPointLocation[1], midPointLocation[2] };
+
+	glTranslatef(midPointLocationScaled[0], midPointLocationScaled[1], midPointLocationScaled[2]); // powrót do pozycji wyjœciowej
+	glRotatef(rotAngle * 180 / GL_PI, 0.0f, 0.0f, 1.0f); // obrót wokó³ punktu 0,0 po osi Z
+	glTranslatef(-midPointLocationScaled[0], -midPointLocationScaled[1], -midPointLocationScaled[2]); // translacja do punktu 0,0
+
 
 	rover.drawRover(engineRot, 0, 0, 1);
 	glPopMatrix();
-
 	
+	/*GLfloat color[3] = { 1.0, 0.0, 0.0 };
+	GLfloat aa[3] = { posX + 85, posY - 10, 0.0 };
+	GLfloat bb[3] = { posX + 85, posY + 100, 0.0 };
+	GLfloat cc[3] = { posX - 15, posY + 100, 0.0 };
+	GLfloat dd[3] = { posX - 15, posY - 10, 0.0 };
+
+	Cuboid rock1(color, aa, bb, cc, dd, 40, 0);
+	rock1.drawCuboid(0, 0, 0, 0);
+	
+	
+	GLfloat aaa[3] = { 50, 355, 0.0 };
+	GLfloat bab[3] = { 50, 265, 0.0 };
+	GLfloat cac[3] = { 145, 265, 0.0 };
+	GLfloat dad[3] = { 145, 355, 0.0 };
+
+	Cuboid rock2(color, aaa, bab, cac, dad, 40, 0);
+	rock2.drawCuboid(0, 0, 0, 0);*/
+	
+
+	mrv[0] = posX - 15;
+	mrv[1] = posY + 100;
+	mrv[2] = posX + 85;
+	mrv[3] = posY - 10;
+
+
+	collision[0] = !(mrv[2] < obs1[0] || obs1[2] < mrv[0] || mrv[3] > obs1[1] || obs1[3] > mrv[1]);
+	collision[1] = !(mrv[2] < obs2[0] || obs2[2] < mrv[0] || mrv[3] > obs2[1] || obs2[3] > mrv[1]);
+
+
+
+	rotAngleDeg = fmod(rotAngle * 180 / GL_PI, 360);
+
 	grid.drawGrid();
 	terrain.drawTerrain();
-
 
 	ob1.drawObstacle();
 	ob2.drawObstacle();
 	
 
-	/*
-	cameraX = roverPos[0];
-	cameraY = roverPos[1];
-	cameraZ = roverPos[2];
-*/
 	///////////////////////////////////////////////////////////////////////////////////
+	TwInit(TW_OPENGL, NULL);
+	TwBar *bar;
+	bar = TwNewBar("Parametry");
 
+	TwWindowSize(800, 800);
+	TwAddButton(bar, "Martian rover", NULL, NULL, "");
+	TwAddVarRO(bar, "Velocity", TW_TYPE_FLOAT, &velocity, "precision=1");
+	TwAddVarRO(bar, "Velocity L", TW_TYPE_FLOAT, &velocityL, "precision=1");
+	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "precision=1");
+	TwAddSeparator(bar, "Battery life", "battery");
+	TwAddVarRO(bar, "Battery life %", TW_TYPE_FLOAT, &batteryLife, "precision=0");
+	TwAddSeparator(bar, "Position", "pos");
+	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &posX, "precision=0");
+	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &posY, "precision=0");
+	TwAddSeparator(bar, NULL, "");
+
+	TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
+	TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
+	
+	TwDraw();
+
+	batteryLife -= 0.1;
+	if (batteryLife < 0.0)
+	{
+		batteryLife = 0.0;
+		velocity = 0.0;
+		velocityL = 0.0;
+		velocityR = 0.0;
+	}
+	rotAngleDeg = abs(fmod(rotAngle * 180 / GL_PI, 360));
+
+	if (collision[0] || collision[1] )
+	{
+		velocityL = -0.5*velocityL;
+		velocityR = -0.5*velocityR;
+		velocity = -0.5*velocity;
+	}
 
 	//////////////////////////////////////////////////////////////
 
@@ -525,7 +701,7 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	
 				// Window position and size
-				-1400, 50,
+				-1000, 50,
 				800, 800,
 				NULL,
 				NULL,
@@ -738,31 +914,180 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 			if (wParam == VK_ADD)
 				zoom -= 20.0f;
 
-			if (wParam == 'A')
-				roverRot += rotSpeed;
+			//if (wParam == 'A')
+			//	rotAngle+= rotSpeed;
 
-			if (wParam == 'D')
-				roverRot -= rotSpeed;
+			//if (wParam == 'D')
+			//	rotAngle -= rotSpeed;
 
-			if (wParam == 'Q') // skret w lewo
-				engineRot += rotSpeed;
+			//if (wParam == 'Q') // skret w lewo
+			//	engineRot += rotSpeed;
 
-			if (wParam == 'E') // skret w prawo
-				engineRot -= rotSpeed;
+			//if (wParam == 'E') // skret w prawo
+			//	engineRot -= rotSpeed;
+
+			//if (wParam == 'W') // do przodu
+			//	velocity = const_velocity;
+
+			//if (wParam == 'S') // do tylu
+			//	velocity = -const_velocity;
+
+			//xRot = GLfloat((const int)xRot % 360);
+			//yRot = GLfloat((const int)yRot % 360);
+			//zRot = GLfloat((const int)zRot % 360);
+
+			//InvalidateRect(hWnd,NULL,FALSE);
+			//}
+
+
+
+			//if (wParam == 'R') // skret w prawo
+			//{
+			//	posX = posY = velocityL = velocityR = velocity = 0;
+			//}
+			//if (wParam == 'W') // do przodu
+			//{
+			//	if (velocity != 0)
+			//	{
+			//		velocityL += const_velocity;
+			//		velocityR -= const_velocity;
+			//		if (engineRot >= -30.0f)
+			//		{
+			//			engineRot -= ErotSpeed;
+			//		}
+			//		velocityUpdate = 1;
+			//	}
+			//}
+
+			//if (wParam == 'S') // do tylu
+			//{
+			//	if (velocity != 0)
+			//	{
+			//		velocityL -= const_velocity;
+			//		velocityR += const_velocity/2;
+			//		if (engineRot >= -30.0f)
+			//		{
+			//			engineRot -= ErotSpeed;
+			//		}
+			//		velocityUpdate = 1;
+			//	}
+			//}
+
+			//if (wParam == 'E') // do przodu
+			//{
+			//	if (velocity != 0)
+			//	{
+			//		velocityR += const_velocity;
+			//		velocityL -= const_velocity;
+			//		if (engineRot <= 30.0f)
+			//		{
+			//			engineRot += ErotSpeed;
+			//		}
+			//		velocityUpdate = 1;
+			//	}
+			//}
+
+			//if (wParam == 'D') // do tylu
+			//{
+			//	if (velocity != 0)
+			//	{
+			//		velocityR -= const_velocity;
+			//		velocityL += const_velocity/2;
+			//		if (engineRot <= 30.0f)
+			//		{
+			//			engineRot += ErotSpeed;
+			//		}
+			//		velocityUpdate = 1;
+			//	}
+			//}
+
+
 
 			if (wParam == 'W') // do przodu
-				velocity = const_velocity;
+			{
+				velocityL += const_velocity;
+				velocityR += const_velocity;
+				velocityUpdate = 1;
+			}
 
 			if (wParam == 'S') // do tylu
-				velocity = -const_velocity;
-
-			xRot = GLfloat((const int)xRot % 360);
-			yRot = GLfloat((const int)yRot % 360);
-			zRot = GLfloat((const int)zRot % 360);
-
-			InvalidateRect(hWnd,NULL,FALSE);
+			{
+				velocityL -= const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
 			}
-			if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
+
+			if (wParam == 'A') // do tylu
+			{
+				velocityL += const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
+				if (engineRot >= -30.0f)
+				{
+					engineRot -= ErotSpeed;
+				}
+			}
+
+			if (wParam == 'D') // do tylu
+			{
+				velocityR += const_velocity;
+				velocityL -= const_velocity;
+				velocityUpdate = 1;
+				if (engineRot <= 30.0f)
+				{
+					engineRot += ErotSpeed;
+				}
+			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			if (wParam == VK_CONTROL) // w gore
+			{
+				posZ -= const_velocity;
+				velocityUpdate = 1;
+			}
+			if (wParam == VK_SHIFT) // w dol
+			{
+				posZ += const_velocity;
+				velocityUpdate = 1;
+			}
+			if (wParam == VK_SPACE)
+			{
+				velocityR = velocityL = 0;
+				velocityUpdate = 1;
+			}
+
+			if (wParam == VK_UP)
+			{
+				velocityL += const_velocity;
+				velocityR += const_velocity;
+				velocityUpdate = 1;
+			}
+
+			if (wParam == VK_DOWN)
+			{
+				velocityL -= const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
+			}
+			InvalidateRect(hWnd, NULL, FALSE);
+			}
+
+
+
+			/*if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
 				glLoadIdentity();
 				xRot = 0;
 				yRot = 0;
@@ -780,7 +1105,7 @@ LRESULT CALLBACK WndProc(       HWND    hWnd,
 
 				if (wParam == VK_RIGHT)
 					gluLookAt(cameraX - 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
-			}
+			}*/
 			break;
 
 		// A menu command
