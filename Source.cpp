@@ -62,7 +62,7 @@ static GLfloat swingRadius = 0.0f;
 static GLfloat const_velocity = 0.7f; //5.0f ja
 static GLfloat velocityL = 0.0f;
 static GLfloat velocityR = 0.0f;
-static GLfloat momentumConst = 0.2*const_velocity;
+static GLfloat momentumConst = 0.2f*const_velocity;
 bool velocityUpdate = 0;
 //std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f,0.0f };
 std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f };
@@ -359,7 +359,7 @@ void RenderScene(void)
 	if (velocityL != velocityR)
 	{
 		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR))) // to je swing radius a nie swing angle xD
-			rotAngle += atan2(swingRadius, 0) - atan2(swingRadius, velocity);
+			rotAngle += GLfloat(atan2(swingRadius, 0) - atan2(swingRadius, velocity));
 		//rotAngle = asin(velocity / swingRadius);
 
 	}
@@ -462,7 +462,7 @@ void RenderScene(void)
 	midPointLocationScaled = { midPointLocation[0], midPointLocation[1], midPointLocation[2] };
 
 	glTranslatef(midPointLocationScaled[0], midPointLocationScaled[1], midPointLocationScaled[2]); // powrót do pozycji wyjœciowej
-	glRotatef(rotAngle * 180 / GL_PI, 0.0f, 0.0f, 1.0f); // obrót wokó³ punktu 0,0 po osi Z
+	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokó³ punktu 0,0 po osi Z
 	glTranslatef(-midPointLocationScaled[0], -midPointLocationScaled[1], -midPointLocationScaled[2]); // translacja do punktu 0,0
 
 
@@ -499,7 +499,7 @@ void RenderScene(void)
 
 
 
-	rotAngleDeg = fmod(rotAngle * 180 / GL_PI, 360);
+	rotAngleDeg = GLfloat(fmod(rotAngle * 180.0f / GL_PI, 360));
 
 	grid.drawGrid();
 	terrain.drawTerrain();
@@ -530,21 +530,21 @@ void RenderScene(void)
 	
 	TwDraw();
 
-	batteryLife -= 0.1;
-	if (batteryLife < 0.0)
+	batteryLife -= 0.1f;
+	if (batteryLife < 0.0f)
 	{
-		batteryLife = 0.0;
-		velocity = 0.0;
-		velocityL = 0.0;
-		velocityR = 0.0;
+		batteryLife = 0.0f;
+		velocity = 0.0f;
+		velocityL = 0.0f;
+		velocityR = 0.0f;
 	}
-	rotAngleDeg = abs(fmod(rotAngle * 180 / GL_PI, 360));
+	rotAngleDeg = GLfloat(abs(fmod(rotAngle * 180 / GL_PI, 360)));
 
 	if (collision[0] || collision[1] )
 	{
-		velocityL = -0.5*velocityL;
-		velocityR = -0.5*velocityR;
-		velocity = -0.5*velocity;
+		velocityL = -0.5f*velocityL;
+		velocityR = -0.5f*velocityR;
+		velocity = -0.5f*velocity;
 	}
 
 	//////////////////////////////////////////////////////////////
