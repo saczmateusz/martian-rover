@@ -1,7 +1,7 @@
 #include "DEFINITIONS.h"
 #include "szescian/Rover/Rover.h"
 #include "szescian/Grid/Grid.h"
-#include "szescian/Cone/Cone.h"
+#include "szescian/Cylinder/Cylinder.h"
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
 #include <AntTweakBar.h>
@@ -25,27 +25,29 @@ static GLfloat zRot = 0.0f;
 static GLfloat velocity = 0.0f;
 static GLfloat engineRot = 0.0f;
 static GLfloat rotSpeed = 15.0f; //15.0f kryha
-static GLfloat ErotSpeed = 15.0f; //15.0f kryha
+static GLfloat ErotSpeed = 5.0f; //15.0f kryha
 
 static GLfloat roverRadius = 40.0f;
 vector<float> roverPos;
 
-GLfloat obs1[4] = { -205.0, -145.0, -155.0, -205.0 };
-GLfloat obs2[4] = { 50, 355,  145, 265 };
+GLfloat colour[3] = { 1, 0, 0 };
+
+GLfloat obs1mid[3] = { -180, -175, 40 }; // x, y, z
+GLfloat obs1radius = 25;
+
+GLfloat obs2mid[3] = { 99, 308, 40 }; // x, y, z
+GLfloat obs2radius = 46;
 
 bool collision[2] = { 0, 0 };
-
-static float cameraX;
-static float cameraY;
-static float cameraZ;
 
 static GLfloat posX = 0.0f;
 static GLfloat posY = 0.0f;
 static GLfloat posZ = 0.0f;
 
+GLfloat rovmid[3] = { posX + 35, posY + 35, 40 }; // x, y, z, r
+GLfloat rovradius = 55;
 
-GLfloat mrv[4] = { posX - 25, posY + 110, posX + 95, posY - 20 };
-
+Cylinder obsRange(colour, rovmid, rovradius, 40, 0, 1);
 
 GLfloat batteryLife = 100.0;
 
@@ -64,11 +66,7 @@ static GLfloat velocityL = 0.0f;
 static GLfloat velocityR = 0.0f;
 static GLfloat momentumConst = 0.2f*const_velocity;
 bool velocityUpdate = 0;
-//std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f,0.0f };
 std::vector<GLfloat> midPointLocation{ 0.0f,0.0f,0.0f };
-std::vector<GLfloat> midPointLocationScaled{ 0,0,0 };
-
-
 
 Grid grid(1000);
 Rover rover(0, 0, 0);
@@ -80,6 +78,11 @@ static GLfloat zoom;
 
 static GLsizei lastHeight;
 static GLsizei lastWidth;
+
+GLfloat distanceCalculate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
+{
+	return sqrt(pow((x1 - x2), 2) + pow((y1 - y2), 2));
+}
 
 unsigned int LoadTexture(const char* file, GLenum textureSlot)
 {
@@ -117,68 +120,15 @@ LRESULT CALLBACK WndProc(   HWND    hWnd,
 							WPARAM  wParam,
 							LPARAM  lParam);
 
-// Dialog procedure for about box
-BOOL APIENTRY AboutDlgProc (HWND hDlg, UINT message, UINT wParam, LONG lParam);
-
 // Set Pixel Format function - forward declaration
 void SetDCPixelFormat(HDC hDC);
 
 // Reduces a normal vector specified as a set of three coordinates,
 // to a unit normal vector of length one.
-void ReduceToUnit(float vector[3])
-	{
-	float length;
-	
-	// Calculate the length of the vector		
-	length = (float)sqrt((vector[0]*vector[0]) + 
-						(vector[1]*vector[1]) +
-						(vector[2]*vector[2]));
-
-	// Keep the program from blowing up by providing an exceptable
-	// value for vectors that may calculated too close to zero.
-	if(length == 0.0f)
-		length = 1.0f;
-
-	// Dividing each element by the length will result in a
-	// unit normal vector.
-	vector[0] /= length;
-	vector[1] /= length;
-	vector[2] /= length;
-	}
-
-
-// Points p1, p2, & p3 specified in counter clock-wise order
-void calcNormal(float v[3][3], float out[3])
-	{
-	float v1[3],v2[3];
-	static const int x = 0;
-	static const int y = 1;
-	static const int z = 2;
-
-	// Calculate two vectors from the three points
-	v1[x] = v[0][x] - v[1][x];
-	v1[y] = v[0][y] - v[1][y];
-	v1[z] = v[0][z] - v[1][z];
-
-	v2[x] = v[1][x] - v[2][x];
-	v2[y] = v[1][y] - v[2][y];
-	v2[z] = v[1][z] - v[2][z];
-
-	// Take the cross product of the two vectors to get
-	// the normal vector which will be stored in out
-	out[x] = v1[y]*v2[z] - v1[z]*v2[y];
-	out[y] = v1[z]*v2[x] - v1[x]*v2[z];
-	out[z] = v1[x]*v2[y] - v1[y]*v2[x];
-
-	// Normalize the vector (shorten length to one)
-	ReduceToUnit(out);
-	}
-
-
 
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(GLsizei w, GLsizei h)
-	{
+{
 	GLfloat nRange = 200.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
@@ -209,7 +159,7 @@ void ChangeSize(GLsizei w, GLsizei h)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	}
+}
 
 
 
@@ -217,12 +167,12 @@ void ChangeSize(GLsizei w, GLsizei h)
 // context.  Here it sets up and initializes the lighting for
 // the scene.
 void SetupRC()
-	{
+{
 	// Light values and coordinates
-	//GLfloat  ambientLight[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	//GLfloat  ambientLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
 	//GLfloat  diffuseLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
 	//GLfloat  specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
-	//GLfloat	 lightPos[] = { 0.0f, 150.0f, 150.0f, 1.0f };
+	//GLfloat	 lightPos[] = { 200.0f, -150.0f, 400.0f, 1.0f };
 	//GLfloat  specref[] =  { 1.0f, 1.0f, 1.0f, 1.0f };
 
 
@@ -259,88 +209,13 @@ void SetupRC()
 
 
 	midPointLocation = rover.getPos();
-
-	
-
-
-	}
-
-// LoadBitmapFile
-// opis: ³aduje mapê bitow¹ z pliku i zwraca jej adres.
-//       Wype³nia strukturê nag³ówka.
-//	 Nie obs³uguje map 8-bitowych.
-unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
-{
-	FILE *filePtr;							// wskaŸnik pozycji pliku
-	BITMAPFILEHEADER	bitmapFileHeader;		// nag³ówek pliku
-	unsigned char		*bitmapImage;			// dane obrazu
-	unsigned int		imageIdx = 0;			// licznik pikseli
-	unsigned char		tempRGB;				// zmienna zamiany sk³adowych
-
-	// otwiera plik w trybie "read binary"
-	filePtr = fopen(filename, "rb");
-	if (filePtr == NULL)
-		return NULL;
-
-	// wczytuje nag³ówek pliku
-	fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
-	
-	// sprawdza, czy jest to plik formatu BMP
-	if (bitmapFileHeader.bfType != BITMAP_ID)
-	{
-		fclose(filePtr);
-		return NULL;
-	}
-
-	// wczytuje nag³ówek obrazu
-	fread(bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
-
-	// ustawia wskaŸnik pozycji pliku na pocz¹tku danych obrazu
-	fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
-
-	// przydziela pamiêæ buforowi obrazu
-	bitmapImage = (unsigned char*)malloc(bitmapInfoHeader->biSizeImage);
-
-	// sprawdza, czy uda³o siê przydzieliæ pamiêæ
-	if (!bitmapImage)
-	{
-		free(bitmapImage);
-		fclose(filePtr);
-		return NULL;
-	}
-
-	// wczytuje dane obrazu
-	fread(bitmapImage, 1, bitmapInfoHeader->biSizeImage, filePtr);
-
-	// sprawdza, czy dane zosta³y wczytane
-	if (bitmapImage == NULL)
-	{
-		fclose(filePtr);
-		return NULL;
-	}
-
-	// zamienia miejscami sk³adowe R i B 
-	for (imageIdx = 0; imageIdx < bitmapInfoHeader->biSizeImage; imageIdx+=3)
-	{
-		tempRGB = bitmapImage[imageIdx];
-		bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
-		bitmapImage[imageIdx + 2] = tempRGB;
-	}
-
-	// zamyka plik i zwraca wskaŸnik bufora zawieraj¹cego wczytany obraz
-	fclose(filePtr);
-	return bitmapImage;
 }
-// Called to draw scene
 
 void RenderScene(void)
-	{
-	//float normal[3];	// Storeage for calculated surface normal
-
+{
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Save the matrix state and do the rotations
 	glPushMatrix();
 
 	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
@@ -358,30 +233,22 @@ void RenderScene(void)
 
 	if (velocityL != velocityR)
 	{
-		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR))) // to je swing radius a nie swing angle xD
+		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR)))
 			rotAngle += GLfloat(atan2(swingRadius, 0) - atan2(swingRadius, velocity));
-		//rotAngle = asin(velocity / swingRadius);
-
 	}
-	//else if (velocityL == 0)
-		//rotAngle = 0;
 
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	
-	//posX += velocity * sin(-roverRot * GL_PI / 180); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
-	//posY += velocity * cos(roverRot*GL_PI / 180);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
 	posX += velocity * sin(-rotAngle); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
-	posY += velocity * cos(rotAngle);// Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
-
+	posY += velocity * cos(rotAngle); // Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
 	gluLookAt(
-		posX+35, // eye X
+		posX+30, // eye X
 		posY-200, // eye Y
-		posZ + 350, // eye Z
-		posX+35,// center X
+		posZ+350, // eye Z
+		posX+30,// center X
 		posY+40, // center Y
 		posZ, // center Z
 		0.0,
@@ -398,13 +265,13 @@ void RenderScene(void)
 		if (velocityL > 0)
 		{
 			if (velocityL - momentumConst > 0)
-				velocityL -= momentumConst;
+				velocityL -= 2*momentumConst;
 			else velocityL = 0;
 		}
 		else
 		{
 			if (velocityL + momentumConst < 0)
-				velocityL += momentumConst;
+				velocityL += 2*momentumConst;
 			else velocityL = 0;
 		}
 
@@ -412,92 +279,41 @@ void RenderScene(void)
 		if (velocityR > 0)
 		{
 			if (velocityR - momentumConst > 0)
-				velocityR -= momentumConst;
+				velocityR -= 2*momentumConst;
 			else velocityR = 0;
 		}
 		else
 		{
 			if (velocityR + momentumConst < 0)
-				velocityR += momentumConst;
+				velocityR += 2*momentumConst;
 			else velocityR = 0;
 		}
 		velocity = (velocityL + velocityR) / 2;
 		if (engineRot < 0)
 		{
-			engineRot += ErotSpeed / 2;
+			engineRot += ErotSpeed / 4;
 		}
 		else if (engineRot > 0)
 		{
-			engineRot -= ErotSpeed / 2;
+			engineRot -= ErotSpeed / 4;
 		}
 	}
 
-	/*if (velocity > 0)     to jest poprzedni kod
-	{
-		if (velocity - momentumConst > 0)
-			velocity -= momentumConst;
-		else velocityL = velocityR = velocity = 0;
-		if (engineRot < 0)
-		{
-			engineRot += rotSpeed;
-		}
-		else if (engineRot > 0)
-		{
-			engineRot -= rotSpeed;
-		}
-	}
-	else
-	{
-		if (velocity + momentumConst < 0)
-			velocity += momentumConst;
-		else velocityL = velocityR = velocity = 0;
-	}*/
-
-
-	//glTranslatef(roverPos[0], roverPos[1], roverPos[2]); // powrot do pozycji wyjsciowej
-	//glRotatef(rotAngle, 0.0f, 0.0f, 1.0f); // obrot wokol punktu 0,0 po osi Z
-	//glTranslatef(-roverPos[0], -roverPos[1], -roverPos[2]); // translacja do punktu 0,0
-
-
-	midPointLocationScaled = { midPointLocation[0], midPointLocation[1], midPointLocation[2] };
-
-	glTranslatef(midPointLocationScaled[0], midPointLocationScaled[1], midPointLocationScaled[2]); // powrót do pozycji wyjœciowej
+	glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powrót do pozycji wyjœciowej
 	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokó³ punktu 0,0 po osi Z
-	glTranslatef(-midPointLocationScaled[0], -midPointLocationScaled[1], -midPointLocationScaled[2]); // translacja do punktu 0,0
+	glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
 
 
 	rover.drawRover(engineRot, 0, 0, 1);
 	glPopMatrix();
 	
-	/*GLfloat color[3] = { 1.0, 0.0, 0.0 };
-	GLfloat aa[3] = { posX + 85, posY - 10, 0.0 };
-	GLfloat bb[3] = { posX + 85, posY + 100, 0.0 };
-	GLfloat cc[3] = { posX - 15, posY + 100, 0.0 };
-	GLfloat dd[3] = { posX - 15, posY - 10, 0.0 };
-
-	Cuboid rock1(color, aa, bb, cc, dd, 40, 0);
-	rock1.drawCuboid(0, 0, 0, 0);
+	//GLfloat color[3] = { 1.0, 0.0, 0.0 };
 	
-	
-	GLfloat aaa[3] = { 50, 355, 0.0 };
-	GLfloat bab[3] = { 50, 265, 0.0 };
-	GLfloat cac[3] = { 145, 265, 0.0 };
-	GLfloat dad[3] = { 145, 355, 0.0 };
+	rovmid[0] = posX + 35;
+	rovmid[1] = posY + 35;
 
-	Cuboid rock2(color, aaa, bab, cac, dad, 40, 0);
-	rock2.drawCuboid(0, 0, 0, 0);*/
-	
-
-	mrv[0] = posX - 15;
-	mrv[1] = posY + 100;
-	mrv[2] = posX + 85;
-	mrv[3] = posY - 10;
-
-
-	collision[0] = !(mrv[2] < obs1[0] || obs1[2] < mrv[0] || mrv[3] > obs1[1] || obs1[3] > mrv[1]);
-	collision[1] = !(mrv[2] < obs2[0] || obs2[2] < mrv[0] || mrv[3] > obs2[1] || obs2[3] > mrv[1]);
-
-
+	collision[0] = !(distanceCalculate(rovmid[0], rovmid[1], obs1mid[0], obs1mid[1]) > rovradius + obs1radius);
+	collision[1] = !(distanceCalculate(rovmid[0], rovmid[1], obs2mid[0], obs2mid[1]) > rovradius + obs2radius);
 
 	rotAngleDeg = GLfloat(fmod(rotAngle * 180.0f / GL_PI, 360));
 
@@ -731,467 +547,201 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 
 
 // Window procedure, handles all messages for this program
-LRESULT CALLBACK WndProc(       HWND    hWnd,
-							UINT    message,
-							WPARAM  wParam,
-							LPARAM  lParam)
-	{
-	static HGLRC hRC;               // Permenant Rendering context
-	static HDC hDC;                 // Private GDI Device context
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	static HGLRC hRC;
+	static HDC hDC;
 
 	switch (message)
+	{
+	case WM_CREATE:
+		hDC = GetDC(hWnd);
+		SetDCPixelFormat(hDC);
+		hPalette = GetOpenGLPalette(hDC);
+		hRC = wglCreateContext(hDC);
+		wglMakeCurrent(hDC, hRC);
+		SetupRC();
+
+		dust = LoadTexture("Textures/dust.png", 1);
+		banana = LoadTexture("Textures/banana.png", 1);
+		rock = LoadTexture("Textures/rock.png", 1);
+		smok = LoadTexture("Textures/smok.png", 1);
+		terrain.setTexture(dust);
+		rover.setTextures(banana, smok);
+		ob1.setTexture(rock);
+		ob2.setTexture(rock);
+		break;
+
+	case WM_DESTROY:
+		wglMakeCurrent(hDC, NULL);
+		wglDeleteContext(hRC);
+		if (hPalette != NULL)
+			DeleteObject(hPalette);
+		PostQuitMessage(0);
+		break;
+
+	case WM_SIZE:
+		ChangeSize(LOWORD(lParam), HIWORD(lParam));
+		break;
+
+	case WM_PAINT:
+	{
+		RenderScene();
+		SwapBuffers(hDC);
+		InvalidateRect(hWnd, NULL, FALSE);
+	}
+	break;
+
+	case WM_QUERYNEWPALETTE:
+		if (hPalette)
 		{
-		// Window creation, setup for OpenGL
-		case WM_CREATE:
-			// Store the device context
-			hDC = GetDC(hWnd);              
-
-			// Select the pixel format
-			SetDCPixelFormat(hDC);          
-
-			// Create palette if needed
-			hPalette = GetOpenGLPalette(hDC);
-
-			// Create the rendering context and make it current
-			hRC = wglCreateContext(hDC);
-			wglMakeCurrent(hDC, hRC);
-			SetupRC();
-			glGenTextures(2, &texture[0]);                  // tworzy obiekt tekstury			
-			
-			// ³aduje pierwszy obraz tekstury:
-			bitmapData = LoadBitmapFile("Bitmapy\\checker.bmp", &bitmapInfoHeader);
-			
-			glBindTexture(GL_TEXTURE_2D, texture[0]);       // aktywuje obiekt tekstury
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-
-			// tworzy obraz tekstury
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmapInfoHeader.biWidth,
-						 bitmapInfoHeader.biHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, bitmapData);
-			
-			if(bitmapData)
-			free(bitmapData);
-
-			// ³aduje drugi obraz tekstury:
-			bitmapData = LoadBitmapFile("Bitmapy\\crate.bmp", &bitmapInfoHeader);
-			glBindTexture(GL_TEXTURE_2D, texture[1]);       // aktywuje obiekt tekstury
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-
-			// tworzy obraz tekstury
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmapInfoHeader.biWidth,
-						 bitmapInfoHeader.biHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, bitmapData);
-			
-			if(bitmapData)
-			free(bitmapData);
-			///////////////////////////////////////////////////////////////////
-
-			dust = LoadTexture("Textures/dust.png", 1);
-			banana = LoadTexture("Textures/banana.png", 1);
-			rock = LoadTexture("Textures/rock.png", 1);
-			smok = LoadTexture("Textures/smok.png", 1);
-			terrain.setTexture(dust);
-			rover.setTextures(banana, smok);
-			ob1.setTexture(rock);
-			ob2.setTexture(rock);
-
-			// ustalenie sposobu mieszania tekstury z t³em
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);
-			break;
-
-		// Window is being destroyed, cleanup
-		case WM_DESTROY:
-			// Deselect the current rendering context and delete it
-			wglMakeCurrent(hDC,NULL);
-			wglDeleteContext(hRC);
-
-			// Delete the palette if it was created
-			if(hPalette != NULL)
-				DeleteObject(hPalette);
-
-			// Tell the application to terminate after the window
-			// is gone.
-			PostQuitMessage(0);
-			break;
-
-		// Window is resized.
-		case WM_SIZE:
-			// Call our function which modifies the clipping
-			// volume and viewport
-			ChangeSize(LOWORD(lParam), HIWORD(lParam));
-			break;
-
-
-		// The painting function.  This message sent by Windows 
-		// whenever the screen needs updating.
-		case WM_PAINT:
-			{
-			// Call OpenGL drawing code
-			RenderScene();
-
-			SwapBuffers(hDC);
-			// Validate the newly painted client area
+			int nRet;
+			SelectPalette(hDC, hPalette, FALSE);
+			nRet = RealizePalette(hDC);
 			InvalidateRect(hWnd, NULL, FALSE);
-			}
-			break;
-
-		// Windows is telling the application that it may modify
-		// the system palette.  This message in essance asks the 
-		// application for a new palette.
-		case WM_QUERYNEWPALETTE:
-			// If the palette was created.
-			if(hPalette)
-				{
-				int nRet;
-
-				// Selects the palette into the current device context
-				SelectPalette(hDC, hPalette, FALSE);
-
-				// Map entries from the currently selected palette to
-				// the system palette.  The return value is the number 
-				// of palette entries modified.
-				nRet = RealizePalette(hDC);
-
-				// Repaint, forces remap of palette in current window
-				InvalidateRect(hWnd,NULL,FALSE);
-
-				return nRet;
-				}
-			break;
-
-	
-		// This window may set the palette, even though it is not the 
-		// currently active window.
-		case WM_PALETTECHANGED:
-			// Don't do anything if the palette does not exist, or if
-			// this is the window that changed the palette.
-			if((hPalette != NULL) && ((HWND)wParam != hWnd))
-				{
-				// Select the palette into the device context
-				SelectPalette(hDC,hPalette,FALSE);
-
-				// Map entries to system palette
-				RealizePalette(hDC);
-				
-				// Remap the current colors to the newly realized palette
-				UpdateColors(hDC);
-				return 0;
-				}
-			break;
-
-		// Key press, check for arrow keys to do cube rotation.
-		case WM_KEYDOWN:
-			{
-			if(wParam == VK_NUMPAD8)
-				xRot-= 5.0f;
-
-			if(wParam == VK_NUMPAD2)
-				xRot += 5.0f;
-
-			if(wParam == VK_NUMPAD4)
-				yRot -= 5.0f;
-
-			if(wParam == VK_NUMPAD6)
-				yRot += 5.0f;
-
-			if (wParam == VK_NUMPAD9)
-				zRot -= 5.0f;
-
-			if (wParam == VK_NUMPAD7)
-				zRot += 5.0f;
-
-			if (wParam == VK_SUBTRACT)
-				zoom += 20.0f;
-
-			if (wParam == VK_ADD)
-				zoom -= 20.0f;
-
-			//if (wParam == 'A')
-			//	rotAngle+= rotSpeed;
-
-			//if (wParam == 'D')
-			//	rotAngle -= rotSpeed;
-
-			//if (wParam == 'Q') // skret w lewo
-			//	engineRot += rotSpeed;
-
-			//if (wParam == 'E') // skret w prawo
-			//	engineRot -= rotSpeed;
-
-			//if (wParam == 'W') // do przodu
-			//	velocity = const_velocity;
-
-			//if (wParam == 'S') // do tylu
-			//	velocity = -const_velocity;
-
-			//xRot = GLfloat((const int)xRot % 360);
-			//yRot = GLfloat((const int)yRot % 360);
-			//zRot = GLfloat((const int)zRot % 360);
-
-			//InvalidateRect(hWnd,NULL,FALSE);
-			//}
-
-
-
-			//if (wParam == 'R') // skret w prawo
-			//{
-			//	posX = posY = velocityL = velocityR = velocity = 0;
-			//}
-			//if (wParam == 'W') // do przodu
-			//{
-			//	if (velocity != 0)
-			//	{
-			//		velocityL += const_velocity;
-			//		velocityR -= const_velocity;
-			//		if (engineRot >= -30.0f)
-			//		{
-			//			engineRot -= ErotSpeed;
-			//		}
-			//		velocityUpdate = 1;
-			//	}
-			//}
-
-			//if (wParam == 'S') // do tylu
-			//{
-			//	if (velocity != 0)
-			//	{
-			//		velocityL -= const_velocity;
-			//		velocityR += const_velocity/2;
-			//		if (engineRot >= -30.0f)
-			//		{
-			//			engineRot -= ErotSpeed;
-			//		}
-			//		velocityUpdate = 1;
-			//	}
-			//}
-
-			//if (wParam == 'E') // do przodu
-			//{
-			//	if (velocity != 0)
-			//	{
-			//		velocityR += const_velocity;
-			//		velocityL -= const_velocity;
-			//		if (engineRot <= 30.0f)
-			//		{
-			//			engineRot += ErotSpeed;
-			//		}
-			//		velocityUpdate = 1;
-			//	}
-			//}
-
-			//if (wParam == 'D') // do tylu
-			//{
-			//	if (velocity != 0)
-			//	{
-			//		velocityR -= const_velocity;
-			//		velocityL += const_velocity/2;
-			//		if (engineRot <= 30.0f)
-			//		{
-			//			engineRot += ErotSpeed;
-			//		}
-			//		velocityUpdate = 1;
-			//	}
-			//}
-
-
-
-			if (wParam == 'W') // do przodu
-			{
-				velocityL += const_velocity;
-				velocityR += const_velocity;
-				velocityUpdate = 1;
-			}
-
-			if (wParam == 'S') // do tylu
-			{
-				velocityL -= const_velocity;
-				velocityR -= const_velocity;
-				velocityUpdate = 1;
-			}
-
-			if (wParam == 'A') // do tylu
-			{
-				velocityL += const_velocity;
-				velocityR -= const_velocity;
-				velocityUpdate = 1;
-				if (engineRot >= -30.0f)
-				{
-					engineRot -= ErotSpeed;
-				}
-			}
-
-			if (wParam == 'D') // do tylu
-			{
-				velocityR += const_velocity;
-				velocityL -= const_velocity;
-				velocityUpdate = 1;
-				if (engineRot <= 30.0f)
-				{
-					engineRot += ErotSpeed;
-				}
-			}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			if (wParam == VK_CONTROL) // w gore
-			{
-				posZ -= const_velocity;
-				velocityUpdate = 1;
-			}
-			if (wParam == VK_SHIFT) // w dol
-			{
-				posZ += const_velocity;
-				velocityUpdate = 1;
-			}
-			if (wParam == VK_SPACE)
-			{
-				velocityR = velocityL = 0;
-				velocityUpdate = 1;
-			}
-
-			if (wParam == VK_UP)
-			{
-				velocityL += const_velocity;
-				velocityR += const_velocity;
-				velocityUpdate = 1;
-			}
-
-			if (wParam == VK_DOWN)
-			{
-				velocityL -= const_velocity;
-				velocityR -= const_velocity;
-				velocityUpdate = 1;
-			}
-			InvalidateRect(hWnd, NULL, FALSE);
-			}
-
-
-
-			/*if (wParam == VK_DOWN || wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP) {
-				glLoadIdentity();
-				xRot = 0;
-				yRot = 0;
-				zRot = 0;
-
-				if (wParam == VK_DOWN)
-					gluLookAt(cameraX, cameraY + 20, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
-
-
-				if (wParam == VK_UP)
-					gluLookAt(cameraX, cameraY - 60, cameraZ + 40, cameraX, cameraY, cameraZ, 0, 0, 1);
-
-				if (wParam == VK_LEFT)
-					gluLookAt(cameraX + 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
-
-				if (wParam == VK_RIGHT)
-					gluLookAt(cameraX - 40, cameraY, cameraZ + 20, cameraX, cameraY, cameraZ, 0, 0, 1);
-			}*/
-			break;
-
-		// A menu command
-		case WM_COMMAND:
-			{
-			switch(LOWORD(wParam))
-				{
-				// Exit the program
-				case ID_FILE_EXIT:
-					DestroyWindow(hWnd);
-					break;
-
-				// Display the about box
-				case ID_HELP_ABOUT:
-					DialogBox (hInstance,
-						MAKEINTRESOURCE(IDD_DIALOG_ABOUT),
-						hWnd,
-						DLGPROC(AboutDlgProc));
-					break;
-				}
-			}
-			break;
-
-
-	default:   // Passes it on if unproccessed
-	    return (DefWindowProc(hWnd, message, wParam, lParam));
-
-	}
-
-    return (0L);
-	}
-
-
-
-
-// Dialog procedure.
-BOOL APIENTRY AboutDlgProc (HWND hDlg, UINT message, UINT wParam, LONG lParam)
+			return nRet;
+		}
+		break;
+
+	case WM_PALETTECHANGED:
+		if ((hPalette != NULL) && ((HWND)wParam != hWnd))
+		{
+			SelectPalette(hDC, hPalette, FALSE);
+			RealizePalette(hDC);
+			UpdateColors(hDC);
+			return 0;
+		}
+		break;
+
+	case WM_KEYDOWN:
 	{
-	
-    switch (message)
-	{
-		// Initialize the dialog box
-	    case WM_INITDIALOG:
-			{
-			int i;
-			GLenum glError;
+		if (wParam == VK_NUMPAD8)
+			xRot -= 5.0f;
 
-			// glGetString demo
-			SetDlgItemText(hDlg,IDC_OPENGL_VENDOR,LPCSTR(glGetString(GL_VENDOR)));
-			SetDlgItemText(hDlg,IDC_OPENGL_RENDERER, LPCSTR(glGetString(GL_RENDERER)));
-			SetDlgItemText(hDlg,IDC_OPENGL_VERSION, LPCSTR(glGetString(GL_VERSION)));
-			SetDlgItemText(hDlg,IDC_OPENGL_EXTENSIONS, LPCSTR(glGetString(GL_EXTENSIONS)));
+		if (wParam == VK_NUMPAD2)
+			xRot += 5.0f;
 
-			// gluGetString demo
-			SetDlgItemText(hDlg,IDC_GLU_VERSION, LPCSTR(gluGetString(GLU_VERSION)));
-			SetDlgItemText(hDlg,IDC_GLU_EXTENSIONS, LPCSTR(gluGetString(GLU_EXTENSIONS)));
+		if (wParam == VK_NUMPAD4)
+			yRot -= 5.0f;
 
+		if (wParam == VK_NUMPAD6)
+			yRot += 5.0f;
 
-			// Display any recent error messages
-			i = 0;
-			do {
-				glError = glGetError();
-				SetDlgItemText(hDlg,IDC_ERROR1+i, LPCSTR(gluErrorString(glError)));
-				i++;
-				}
-			while(i < 6 && glError != GL_NO_ERROR);
+		if (wParam == VK_NUMPAD9)
+			zRot -= 5.0f;
 
+		if (wParam == VK_NUMPAD7)
+			zRot += 5.0f;
 
-			return (TRUE);
-			}
-			break;
+		if (wParam == VK_SUBTRACT)
+			zoom += 20.0f;
 
-		// Process command messages
-	    case WM_COMMAND:      
-			{
-			// Validate and Make the changes
-			if(LOWORD(wParam) == IDOK)
-				EndDialog(hDlg,TRUE);
-		    }
-			break;
+		if (wParam == VK_ADD)
+			zoom -= 20.0f;
 
-		// Closed from sysbox
-		case WM_CLOSE:
-			EndDialog(hDlg,TRUE);
-			break;
+		if (wParam == 'R')
+		{
+			posX = posY = velocityL = velocityR = velocity = 0;
 		}
 
-	return FALSE;
+		if (wParam == 'W')
+		{
+			if (velocity < 5)
+			{
+				velocityL += const_velocity;
+				velocityR += const_velocity;
+				velocityUpdate = 1;
+			}
+		}
+
+		if (wParam == 'S')
+		{
+			if (velocity > -5)
+			{
+				velocityL -= const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
+			}
+		}
+
+		if (wParam == 'A')
+		{
+			if (velocity < 5)
+			{
+				velocityL += const_velocity;
+				velocityUpdate = 1;
+			}
+
+			if (engineRot >= -30.0f)
+			{
+				engineRot -= ErotSpeed;
+			}
+		}
+
+		if (wParam == 'D')
+		{
+			if (velocity < 5)
+			{
+				velocityR += const_velocity;
+				velocityUpdate = 1;
+			}
+
+			if (engineRot <= 30.0f)
+			{
+				engineRot += ErotSpeed;
+			}
+		}
+
+		if (wParam == VK_CONTROL)
+		{
+			posZ -= const_velocity;
+			velocityUpdate = 1;
+		}
+		if (wParam == VK_SHIFT)
+		{
+			posZ += const_velocity;
+			velocityUpdate = 1;
+		}
+		if (wParam == VK_SPACE)
+		{
+			velocityR = velocityL = 0;
+			velocityUpdate = 1;
+		}
+
+		if (wParam == VK_UP)
+		{
+			velocityL += const_velocity;
+			velocityR += const_velocity;
+			velocityUpdate = 1;
+		}
+
+		if (wParam == VK_DOWN)
+		{
+			velocityL -= const_velocity;
+			velocityR -= const_velocity;
+			velocityUpdate = 1;
+		}
+		InvalidateRect(hWnd, NULL, FALSE);
+	}
+	break;
+
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case ID_FILE_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		default:
+			break;
+		}
+		break;
+	}
+
+	default:
+		return (DefWindowProc(hWnd, message, wParam, lParam));
+
+	}
+
+	return (0L);
 	}
