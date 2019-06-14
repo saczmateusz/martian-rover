@@ -4,7 +4,6 @@
 #include "szescian/Cylinder/Cylinder.h"
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
-#include "szescian/Cylinder/Cylinder.h"
 #include <AntTweakBar.h>
 
 
@@ -21,7 +20,7 @@ static HINSTANCE hInstance;
 // Rotation amounts
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
-static GLfloat zRot = 0.0f; 
+static GLfloat zRot = 0.0f;
 
 static GLfloat velocity = 0.0f;
 static GLfloat engineRot = 0.0f;
@@ -110,16 +109,16 @@ unsigned int LoadTexture(const char* file, GLenum textureSlot)
 }
 
 // Opis tekstury
-BITMAPINFOHEADER	bitmapInfoHeader;	// nag��wek obrazu
+BITMAPINFOHEADER	bitmapInfoHeader;	// nagłówek obrazu
 unsigned char*		bitmapData;			// dane tekstury
 unsigned int		texture[2];			// obiekt tekstury
 
 
 // Declaration for Window procedure
-LRESULT CALLBACK WndProc(   HWND    hWnd,
-							UINT    message,
-							WPARAM  wParam,
-							LPARAM  lParam);
+LRESULT CALLBACK WndProc(HWND    hWnd,
+	UINT    message,
+	WPARAM  wParam,
+	LPARAM  lParam);
 
 // Set Pixel Format function - forward declaration
 void SetDCPixelFormat(HDC hDC);
@@ -133,29 +132,29 @@ void ChangeSize(GLsizei w, GLsizei h)
 	GLfloat nRange = 200.0f;
 	GLfloat fAspect;
 	// Prevent a divide by zero
-	if(h == 0)
+	if (h == 0)
 		h = 1;
 
 	lastWidth = w;
 	lastHeight = h;
-		
-	fAspect=(GLfloat)w/(GLfloat)h;
+
+	fAspect = (GLfloat)w / (GLfloat)h;
 	// Set Viewport to window dimensions
-    glViewport(0, 0, w, h);
+	glViewport(0, 0, w, h);
 
 	// Reset coordinate system
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	// Establish clipping volume (left, right, bottom, top, near, far)
-    /*if (w <= h) 
+	/*if (w <= h)
 		glOrtho (-nRange, nRange, -nRange*h/w, nRange*h/w, -nRange, nRange);
-    else 
+	else
 		glOrtho (-nRange*w/h, nRange*w/h, -nRange, nRange, -nRange, nRange);
 */
-	// Establish perspective: 
-	
-	gluPerspective(60.0f,fAspect,1.0,2000.0f);
+// Establish perspective: 
+
+	gluPerspective(60.0f, fAspect, 1.0, 2000.0f);
 
 
 	glMatrixMode(GL_MODELVIEW);
@@ -193,7 +192,7 @@ void SetupRC()
 
 	// Enable color tracking
 	//glEnable(GL_COLOR_MATERIAL);
-	
+
 	// Set Material properties to follow glColor values
 	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
@@ -204,9 +203,9 @@ void SetupRC()
 
 
 	// White background
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f );
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	// Black brush
-	glColor3f(0.0,0.0,0.0);
+	glColor3f(0.0, 0.0, 0.0);
 
 
 	midPointLocation = rover.getPos();
@@ -223,7 +222,7 @@ void RenderScene(void)
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 	glRotatef(zRot, 0.0f, 0.0f, 1.0f);
 	glRotatef(zoom, 0, 0, 0);
-	
+
 	roverPos = rover.getPos();
 
 	if (velocityUpdate)
@@ -238,7 +237,7 @@ void RenderScene(void)
 			rotAngle += GLfloat(atan2(swingRadius, 0) - atan2(swingRadius, velocity));
 	}
 
-	//Spos�b na odr�nienie "przedniej" i "tylniej" �ciany wielok�ta:
+	//Sposób na odróźnienie "przedniej" i "tylniej" ściany wielokąta:
 	//glPolygonMode(GL_BACK,GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
@@ -246,11 +245,11 @@ void RenderScene(void)
 	posY += velocity * cos(rotAngle); // Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
 
 	gluLookAt(
-		posX+30, // eye X
-		posY-200, // eye Y
-		posZ+350, // eye Z
-		posX+30,// center X
-		posY+40, // center Y
+		posX + 30, // eye X
+		posY - 200, // eye Y
+		posZ + 350, // eye Z
+		posX + 30,// center X
+		posY + 40, // center Y
 		posZ, // center Z
 		0.0,
 		1.0,
@@ -258,21 +257,21 @@ void RenderScene(void)
 	);
 
 	glPushMatrix();
-	
+
 	glTranslatef(posX, posY, posZ); // translacja o wektory przemieszczenia obliczone wyzej
-	
+
 	if (!velocityUpdate)
 	{
 		if (velocityL > 0)
 		{
 			if (velocityL - momentumConst > 0)
-				velocityL -= 2*momentumConst;
+				velocityL -= 2 * momentumConst;
 			else velocityL = 0;
 		}
 		else
 		{
 			if (velocityL + momentumConst < 0)
-				velocityL += 2*momentumConst;
+				velocityL += 2 * momentumConst;
 			else velocityL = 0;
 		}
 
@@ -280,13 +279,13 @@ void RenderScene(void)
 		if (velocityR > 0)
 		{
 			if (velocityR - momentumConst > 0)
-				velocityR -= 2*momentumConst;
+				velocityR -= 2 * momentumConst;
 			else velocityR = 0;
 		}
 		else
 		{
 			if (velocityR + momentumConst < 0)
-				velocityR += 2*momentumConst;
+				velocityR += 2 * momentumConst;
 			else velocityR = 0;
 		}
 		velocity = (velocityL + velocityR) / 2;
@@ -300,15 +299,16 @@ void RenderScene(void)
 		}
 	}
 
-	glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powr�t do pozycji wyj�ciowej
-	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obr�t wok� punktu 0,0 po osi Z
+	glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powrót do pozycji wyjściowej
+	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
 	glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
+
 
 	rover.drawRover(engineRot, 0, 0, 1);
 	glPopMatrix();
-	
+
 	//GLfloat color[3] = { 1.0, 0.0, 0.0 };
-	
+
 	rovmid[0] = posX + 35;
 	rovmid[1] = posY + 35;
 
@@ -322,7 +322,7 @@ void RenderScene(void)
 
 	ob1.drawObstacle();
 	ob2.drawObstacle();
-	
+
 
 	///////////////////////////////////////////////////////////////////////////////////
 	TwInit(TW_OPENGL, NULL);
@@ -340,12 +340,10 @@ void RenderScene(void)
 	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &posX, "precision=0");
 	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &posY, "precision=0");
 	TwAddSeparator(bar, NULL, "");
+
 	TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
 	TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
-	TwAddSeparator(bar, NULL, "");
-	TwAddVarRW(bar, "rot", TW_TYPE_FLOAT, &rotAngleDeg, "precision=0");
-	TwAddVarRW(bar, "Erot", TW_TYPE_FLOAT, &engineRot, "precision=0");
-	
+
 	TwDraw();
 
 	batteryLife -= 0.1f;
@@ -358,24 +356,24 @@ void RenderScene(void)
 	}
 	rotAngleDeg = GLfloat(abs(fmod(rotAngle * 180 / GL_PI, 360)));
 
-	if (collision[0] || collision[1] )
+	if (collision[0] || collision[1])
 	{
 		velocityL = -0.5f*velocityL;
 		velocityR = -0.5f*velocityR;
 		velocity = -0.5f*velocity;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////
 
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glFlush();
-	}
+}
 
 
 // Select the pixel format for a given device context
 void SetDCPixelFormat(HDC hDC)
-	{
+{
 	int nPixelFormat;
 
 	static PIXELFORMATDESCRIPTOR pfd = {
@@ -401,37 +399,37 @@ void SetDCPixelFormat(HDC hDC)
 
 	// Set the pixel format for the device context
 	SetPixelFormat(hDC, nPixelFormat, &pfd);
-	}
+}
 
 
 
 // If necessary, creates a 3-3-2 palette for the device context listed.
 HPALETTE GetOpenGLPalette(HDC hDC)
-	{
+{
 	HPALETTE hRetPal = NULL;	// Handle to palette to be created
 	PIXELFORMATDESCRIPTOR pfd;	// Pixel Format Descriptor
 	LOGPALETTE *pPal;			// Pointer to memory for logical palette
 	int nPixelFormat;			// Pixel format index
 	int nColors;				// Number of entries in palette
 	int i;						// Counting variable
-	BYTE RedRange,GreenRange,BlueRange;
-								// Range for each color entry (7,7,and 3)
+	BYTE RedRange, GreenRange, BlueRange;
+	// Range for each color entry (7,7,and 3)
 
 
-	// Get the pixel format index and retrieve the pixel format description
+// Get the pixel format index and retrieve the pixel format description
 	nPixelFormat = GetPixelFormat(hDC);
 	DescribePixelFormat(hDC, nPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 
 	// Does this pixel format require a palette?  If not, do not create a
 	// palette and just return NULL
-	if(!(pfd.dwFlags & PFD_NEED_PALETTE))
+	if (!(pfd.dwFlags & PFD_NEED_PALETTE))
 		return NULL;
 
 	// Number of entries in palette.  8 bits yeilds 256 entries
-	nColors = 1 << pfd.cColorBits;	
+	nColors = 1 << pfd.cColorBits;
 
 	// Allocate space for a logical palette structure plus all the palette entries
-	pPal = (LOGPALETTE*)malloc(sizeof(LOGPALETTE) +nColors*sizeof(PALETTEENTRY));
+	pPal = (LOGPALETTE*)malloc(sizeof(LOGPALETTE) + nColors * sizeof(PALETTEENTRY));
 
 	// Fill in palette header 
 	pPal->palVersion = 0x300;		// Windows 3.0
@@ -440,17 +438,17 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 	// Build mask of all 1's.  This creates a number represented by having
 	// the low order x bits set, where x = pfd.cRedBits, pfd.cGreenBits, and
 	// pfd.cBlueBits.  
-	RedRange = (1 << pfd.cRedBits) -1;
+	RedRange = (1 << pfd.cRedBits) - 1;
 	GreenRange = (1 << pfd.cGreenBits) - 1;
-	BlueRange = (1 << pfd.cBlueBits) -1;
+	BlueRange = (1 << pfd.cBlueBits) - 1;
 
 	// Loop through all the palette entries
-	for(i = 0; i < nColors; i++)
-		{
+	for (i = 0; i < nColors; i++)
+	{
 		// Fill in the 8-bit equivalents for each component
 		pPal->palPalEntry[i].peRed = (i >> pfd.cRedShift) & RedRange;
 		pPal->palPalEntry[i].peRed = (unsigned char)(
-			(double) pPal->palPalEntry[i].peRed * 255.0 / RedRange);
+			(double)pPal->palPalEntry[i].peRed * 255.0 / RedRange);
 
 		pPal->palPalEntry[i].peGreen = (i >> pfd.cGreenShift) & GreenRange;
 		pPal->palPalEntry[i].peGreen = (unsigned char)(
@@ -460,15 +458,15 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 		pPal->palPalEntry[i].peBlue = (unsigned char)(
 			(double)pPal->palPalEntry[i].peBlue * 255.0 / BlueRange);
 
-		pPal->palPalEntry[i].peFlags = (unsigned char) NULL;
-		}
-		
+		pPal->palPalEntry[i].peFlags = (unsigned char)NULL;
+	}
+
 
 	// Create the palette
 	hRetPal = CreatePalette(pPal);
 
 	// Go ahead and select and realize the palette for this device context
-	SelectPalette(hDC,hRetPal,FALSE);
+	SelectPalette(hDC, hRetPal, FALSE);
 	RealizePalette(hDC);
 
 	// Free the memory used for the logical palette structure
@@ -476,14 +474,14 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 
 	// Return the handle to the new palette
 	return hRetPal;
-	}
+}
 
 // Entry point of all Windows programs
-int APIENTRY WinMain(   HINSTANCE       hInst,
-						HINSTANCE       hPrevInstance,
-						LPSTR           lpCmdLine,
-						int                     nCmdShow)
-	{
+int APIENTRY WinMain(HINSTANCE       hInst,
+	HINSTANCE       hPrevInstance,
+	LPSTR           lpCmdLine,
+	int                     nCmdShow)
+{
 	MSG                     msg;            // Windows message structure
 	WNDCLASS        wc;                     // Windows class structure
 	HWND            hWnd;           // Storeage for window handle
@@ -491,59 +489,59 @@ int APIENTRY WinMain(   HINSTANCE       hInst,
 	hInstance = hInst;
 
 	// Register Window style
-	wc.style                        = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc          = (WNDPROC) WndProc;
-	wc.cbClsExtra           = 0;
-	wc.cbWndExtra           = 0;
-	wc.hInstance            = hInstance;
-	wc.hIcon                        = NULL;
-	wc.hCursor                      = LoadCursor(NULL, IDC_ARROW);
-	
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = (WNDPROC)WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = NULL;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+
 	// No need for background brush for OpenGL window
-	wc.hbrBackground        = NULL;         
-	
-	wc.lpszMenuName         = MAKEINTRESOURCE(IDR_MENU);
-	wc.lpszClassName        = lpszAppName;
+	wc.hbrBackground = NULL;
+
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU);
+	wc.lpszClassName = lpszAppName;
 
 	// Register the window class
-	if(RegisterClass(&wc) == 0)
+	if (RegisterClass(&wc) == 0)
 		return FALSE;
 
 
 	// Create the main application window
 	hWnd = CreateWindow(
-				lpszAppName,
-				lpszAppName,
-				
-				// OpenGL requires WS_CLIPCHILDREN and WS_CLIPSIBLINGS
-				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-	
-				// Window position and size
-				-1050, 50,
-				800, 800,
-				NULL,
-				NULL,
-				hInstance,
-				NULL);
+		lpszAppName,
+		lpszAppName,
+
+		// OpenGL requires WS_CLIPCHILDREN and WS_CLIPSIBLINGS
+		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+
+		// Window position and size
+		-1000, 50,
+		800, 800,
+		NULL,
+		NULL,
+		hInstance,
+		NULL);
 
 	// If window was not created, quit
-	if(hWnd == NULL)
+	if (hWnd == NULL)
 		return FALSE;
 
 
 	// Display the window
-	ShowWindow(hWnd,SW_SHOW);
+	ShowWindow(hWnd, SW_SHOW);
 	UpdateWindow(hWnd);
 
 	// Process application messages until the application closes
-	while( GetMessage(&msg, NULL, 0, 0))
-		{
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-		}
+	}
 
 	return int(msg.wParam);
-	}
+}
 
 
 
@@ -650,17 +648,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (velocity < 5)
 			{
-				posX = posY = velocityL = velocityR = velocity = 0;
-			}
-			
-			if (wParam == 'W')
-			{
-				if (velocity < 5)
-				{
-					velocityL += const_velocity;
-					velocityR += const_velocity;
-					velocityUpdate = 1;
-				}
+				velocityL += const_velocity;
+				velocityR += const_velocity;
+				velocityUpdate = 1;
 			}
 		}
 
@@ -668,12 +658,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (velocity > -5)
 			{
-				if (velocity > -5)
-				{
-					velocityL -= const_velocity;
-					velocityR -= const_velocity;
-					velocityUpdate = 1;
-				}
+				velocityL -= const_velocity;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
 			}
 		}
 
@@ -757,4 +744,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return (0L);
-	}
+}
