@@ -339,7 +339,7 @@ void RenderScene(void)
 
 	if (collision[2])
 	{
-		getPoint->play2D("Audio/explosion.wav");
+		getPoint->play2D("Audio/bell.wav");
 		++points;
 		checkpoint.center[0] = (rand() % 1000) - 500.0f;
 		checkpoint.center[1] = (rand() % 1000) - 500.0f;
@@ -356,6 +356,7 @@ void RenderScene(void)
 
 	if (collision[0] || collision[1])
 	{
+		getPoint->play2D("Audio/explosion.wav");
 		velocityL = -0.5f*velocityL;
 		velocityR = -0.5f*velocityR;
 		velocity = -0.5f*velocity;
