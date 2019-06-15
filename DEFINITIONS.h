@@ -28,6 +28,8 @@
 #include "RESOURCE.H"           // About box resource identifiers.
 #include <vector>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 #define glRGB(x, y, z)	glColor3ub((GLubyte)x, (GLubyte)y, (GLubyte)z)
 #define BITMAP_ID 0x4D42		// identyfikator formatu BMP

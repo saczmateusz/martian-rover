@@ -48,8 +48,8 @@ void Rover::setTextures(unsigned int texID, unsigned int smokID)
 vector<float> Rover::getPos()
 {
 	vector<float> pos;
-	pos.push_back(posX + 35.0);
-	pos.push_back(posY + 30.0);
+	pos.push_back(posX + 35.0f);
+	pos.push_back(posY + 30.0f);
 	pos.push_back(posZ);
 	return pos;
 }

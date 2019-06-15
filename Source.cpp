@@ -2,10 +2,11 @@
 #include "szescian/Rover/Rover.h"
 #include "szescian/Grid/Grid.h"
 #include "szescian/Cylinder/Cylinder.h"
+#include "szescian/Cone/Cone.h"
 #include "szescian/Terrain/Terrain.h"
 #include "szescian/Obstacle/Obstacle.h"
 #include <AntTweakBar.h>
-
+#include <irrKlang.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -17,20 +18,22 @@ HPALETTE hPalette = NULL;
 static LPCTSTR lpszAppName = "Martian rover";
 static HINSTANCE hInstance;
 
-// Rotation amounts
-static GLfloat xRot = 0.0f;
-static GLfloat yRot = 0.0f;
-static GLfloat zRot = 0.0f;
+//create audio engine
+irrklang::ISoundEngine* getPoint = irrklang::createIrrKlangDevice();
+
+// Rotation amounts - camera
+static GLfloat cameraXrot = 0.0f;
+static GLfloat cameraYrot = 0.0f;
+static GLfloat cameraZrot = 0.0f;
 
 static GLfloat velocity = 0.0f;
 static GLfloat engineRot = 0.0f;
-static GLfloat rotSpeed = 15.0f; //15.0f kryha
-static GLfloat ErotSpeed = 5.0f; //15.0f kryha
+static GLfloat roverRotSpeed = 15.0f;
+static GLfloat engineRotSpeed = 5.0f;
 
 static GLfloat roverRadius = 40.0f;
 vector<float> roverPos;
 
-GLfloat colour[3] = { 1, 0, 0 };
 
 GLfloat obs1mid[3] = { -180, -175, 40 }; // x, y, z
 GLfloat obs1radius = 25;
@@ -38,16 +41,15 @@ GLfloat obs1radius = 25;
 GLfloat obs2mid[3] = { 99, 308, 40 }; // x, y, z
 GLfloat obs2radius = 46;
 
-bool collision[2] = { 0, 0 };
+bool collision[3] = { 0, 0, 0 };
 
 static GLfloat posX = 0.0f;
 static GLfloat posY = 0.0f;
 static GLfloat posZ = 0.0f;
 
-GLfloat rovmid[3] = { posX + 35, posY + 35, 40 }; // x, y, z, r
-GLfloat rovradius = 55;
+GLfloat rovmid[3] = { posX + 35, posY + 35, 40 }; // x, y, z
 
-Cylinder obsRange(colour, rovmid, rovradius, 40, 0, 1);
+//Cylinder obsRange(colour, rovmid, roverRadius, 40, 0, 1);
 
 GLfloat batteryLife = 100.0;
 
@@ -61,7 +63,7 @@ static GLfloat rotAngle = 0.0f;
 static GLfloat rotAngleDeg = 0.0f;
 static GLfloat swingRadius = 0.0f;
 
-static GLfloat const_velocity = 0.7f; //5.0f ja
+static GLfloat const_velocity = 0.7f;
 static GLfloat velocityL = 0.0f;
 static GLfloat velocityR = 0.0f;
 static GLfloat momentumConst = 0.2f*const_velocity;
@@ -73,6 +75,14 @@ Rover rover(0, 0, 0);
 Terrain terrain;
 Obstacle ob1(-6, -6, 0.15f, 30);
 Obstacle ob2(2, 6, 0.6f, 50);
+
+GLfloat colour[3] = { 218/(float)255, 185/ (float)255, 35/(float)255 };
+GLfloat checkpointLocation[3] = {40, 160, 70 };
+Cone checkpoint(colour, checkpointLocation, 15, 40);
+
+static bool counterXD = true;
+
+int points = 0;
 
 static GLfloat zoom;
 
@@ -218,9 +228,9 @@ void RenderScene(void)
 
 	glPushMatrix();
 
-	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
-	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
-	glRotatef(zRot, 0.0f, 0.0f, 1.0f);
+	glRotatef(cameraXrot, 1.0f, 0.0f, 0.0f);
+	glRotatef(cameraYrot, 0.0f, 1.0f, 0.0f);
+	glRotatef(cameraZrot, 0.0f, 0.0f, 1.0f);
 	glRotatef(zoom, 0, 0, 0);
 
 	roverPos = rover.getPos();
@@ -264,38 +274,38 @@ void RenderScene(void)
 	{
 		if (velocityL > 0)
 		{
-			if (velocityL - momentumConst > 0)
-				velocityL -= 2 * momentumConst;
+			if (velocityL - 4 * momentumConst > 0)
+				velocityL -= 4 * momentumConst;
 			else velocityL = 0;
 		}
 		else
 		{
-			if (velocityL + momentumConst < 0)
-				velocityL += 2 * momentumConst;
+			if (velocityL + 4 * momentumConst < 0)
+				velocityL += 4 * momentumConst;
 			else velocityL = 0;
 		}
 
 
 		if (velocityR > 0)
 		{
-			if (velocityR - momentumConst > 0)
-				velocityR -= 2 * momentumConst;
+			if (velocityR - 4 * momentumConst > 0)
+				velocityR -= 4 * momentumConst;
 			else velocityR = 0;
 		}
 		else
 		{
-			if (velocityR + momentumConst < 0)
-				velocityR += 2 * momentumConst;
+			if (velocityR + 4 * momentumConst < 0)
+				velocityR += 4 * momentumConst;
 			else velocityR = 0;
 		}
 		velocity = (velocityL + velocityR) / 2;
 		if (engineRot < 0)
 		{
-			engineRot += ErotSpeed / 4;
+			engineRot += engineRotSpeed / 4;
 		}
 		else if (engineRot > 0)
 		{
-			engineRot -= ErotSpeed / 4;
+			engineRot -= engineRotSpeed / 4;
 		}
 	}
 
@@ -303,22 +313,67 @@ void RenderScene(void)
 	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
 	glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
 
-
 	rover.drawRover(engineRot, 0, 0, 1);
 	glPopMatrix();
 
-	//GLfloat color[3] = { 1.0, 0.0, 0.0 };
+	if (checkpointLocation[2] < 80 && counterXD == true)
+	{
+		checkpointLocation[2] += 1;
+		counterXD = checkpointLocation[2] < 80 ? true : false;
+	}
+	else if (checkpointLocation[2] > 60 && counterXD == false)
+	{
+		checkpointLocation[2] -= 1;
+		counterXD = checkpointLocation[2] > 60 ? false : true;
+	}
+
+	checkpoint.center[2] = checkpointLocation[2];
+	checkpoint.drawCone(180, 1, 0, 0);
 
 	rovmid[0] = posX + 35;
 	rovmid[1] = posY + 35;
 
-	collision[0] = !(distanceCalculate(rovmid[0], rovmid[1], obs1mid[0], obs1mid[1]) > rovradius + obs1radius);
-	collision[1] = !(distanceCalculate(rovmid[0], rovmid[1], obs2mid[0], obs2mid[1]) > rovradius + obs2radius);
+	collision[0] = !(distanceCalculate(rovmid[0], rovmid[1], obs1mid[0], obs1mid[1]) > roverRadius + obs1radius);
+	collision[1] = !(distanceCalculate(rovmid[0], rovmid[1], obs2mid[0], obs2mid[1]) > roverRadius + obs2radius);
+	collision[2] = !(distanceCalculate(rovmid[0], rovmid[1], checkpoint.center[0], checkpoint.center[1]) > roverRadius + checkpoint.radius);
+
+	if (collision[2])
+	{
+		getPoint->play2D("Audio/explosion.wav");
+		++points;
+		checkpoint.center[0] = (rand() % 1000) - 500.0f;
+		checkpoint.center[1] = (rand() % 1000) - 500.0f;
+	}
+
+	batteryLife -= 0.02f;
+	if (batteryLife < 0.0f)
+	{
+		batteryLife = 0.0f;
+		velocity = 0.0f;
+		velocityL = 0.0f;
+		velocityR = 0.0f;
+	}
+
+	if (collision[0] || collision[1])
+	{
+		velocityL = -0.5f*velocityL;
+		velocityR = -0.5f*velocityR;
+		velocity = -0.5f*velocity;
+	}
 
 	rotAngleDeg = GLfloat(fmod(rotAngle * 180.0f / GL_PI, 360));
 
 	grid.drawGrid();
 	terrain.drawTerrain();
+
+	
+	//glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powrót do pozycji wyjściowej
+	//glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
+	//glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
+
+	//checkpoint.drawCone(engineRot, 0, 0, 1);
+	
+
 
 	ob1.drawObstacle();
 	ob2.drawObstacle();
@@ -335,33 +390,22 @@ void RenderScene(void)
 	TwAddVarRO(bar, "Velocity L", TW_TYPE_FLOAT, &velocityL, "precision=1");
 	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "precision=1");
 	TwAddSeparator(bar, "Battery life", "battery");
+
 	TwAddVarRO(bar, "Battery life %", TW_TYPE_FLOAT, &batteryLife, "precision=0");
 	TwAddSeparator(bar, "Position", "pos");
+
 	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &posX, "precision=0");
 	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &posY, "precision=0");
 	TwAddSeparator(bar, NULL, "");
 
 	TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
 	TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
+	TwAddVarRW(bar, "obstacle 3", TW_TYPE_BOOLCPP, &collision[2], "");
+	TwAddSeparator(bar, NULL, "");
+
+	TwAddVarRO(bar, "points", TW_TYPE_INT32, &points, "");
 
 	TwDraw();
-
-	batteryLife -= 0.1f;
-	if (batteryLife < 0.0f)
-	{
-		batteryLife = 0.0f;
-		velocity = 0.0f;
-		velocityL = 0.0f;
-		velocityR = 0.0f;
-	}
-	rotAngleDeg = GLfloat(abs(fmod(rotAngle * 180 / GL_PI, 360)));
-
-	if (collision[0] || collision[1])
-	{
-		velocityL = -0.5f*velocityL;
-		velocityR = -0.5f*velocityR;
-		velocity = -0.5f*velocity;
-	}
 
 	//////////////////////////////////////////////////////////////
 
@@ -562,6 +606,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		wglMakeCurrent(hDC, hRC);
 		SetupRC();
 
+		srand(int(time(NULL)));
 		dust = LoadTexture("Textures/dust.png", 1);
 		banana = LoadTexture("Textures/banana.png", 1);
 		rock = LoadTexture("Textures/rock.png", 1);
@@ -573,6 +618,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
+		getPoint->drop();
 		wglMakeCurrent(hDC, NULL);
 		wglDeleteContext(hRC);
 		if (hPalette != NULL)
@@ -616,22 +662,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		if (wParam == VK_NUMPAD8)
-			xRot -= 5.0f;
+			cameraXrot -= 5.0f;
 
 		if (wParam == VK_NUMPAD2)
-			xRot += 5.0f;
+			cameraXrot += 5.0f;
 
 		if (wParam == VK_NUMPAD4)
-			yRot -= 5.0f;
+			cameraYrot -= 5.0f;
 
 		if (wParam == VK_NUMPAD6)
-			yRot += 5.0f;
+			cameraYrot += 5.0f;
 
 		if (wParam == VK_NUMPAD9)
-			zRot -= 5.0f;
+			cameraZrot -= 5.0f;
 
 		if (wParam == VK_NUMPAD7)
-			zRot += 5.0f;
+			cameraZrot += 5.0f;
 
 		if (wParam == VK_SUBTRACT)
 			zoom += 20.0f;
@@ -648,8 +694,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (velocity < 5)
 			{
-				velocityL += const_velocity;
-				velocityR += const_velocity;
+				velocityL += 4 * const_velocity;
+				velocityR += 4 * const_velocity;
 				velocityUpdate = 1;
 			}
 		}
@@ -658,37 +704,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (velocity > -5)
 			{
-				velocityL -= const_velocity;
-				velocityR -= const_velocity;
+				velocityL -= 4 * const_velocity;
+				velocityR -= 4 * const_velocity;
 				velocityUpdate = 1;
 			}
 		}
 
 		if (wParam == 'A')
 		{
-			if (velocity < 5)
+			if (velocity >= 0 && velocity < 5)
 			{
 				velocityL += const_velocity;
 				velocityUpdate = 1;
+				if (engineRot >= -30.0f)
+				{
+					engineRot -= engineRotSpeed;
+				}
 			}
-
-			if (engineRot >= -30.0f)
+			else if (velocity > -5 && velocity <= 0)
 			{
-				engineRot -= ErotSpeed;
+				velocityL -= const_velocity;
+				velocityUpdate = 1;
+				if (engineRot >= -30.0f)
+				{
+					engineRot -= engineRotSpeed;
+				}
 			}
 		}
 
 		if (wParam == 'D')
 		{
-			if (velocity < 5)
+			if (velocity >= 0 && velocity < 5)
 			{
 				velocityR += const_velocity;
 				velocityUpdate = 1;
+				if (engineRot <= 30.0f)
+				{
+					engineRot += engineRotSpeed;
+				}
 			}
-
-			if (engineRot <= 30.0f)
+			else if (velocity > -5 && velocity <= 0)
 			{
-				engineRot += ErotSpeed;
+				velocityR -= const_velocity;
+				velocityUpdate = 1;
+				if (engineRot <= 30.0f)
+				{
+					engineRot += engineRotSpeed;
+				}
 			}
 		}
 
