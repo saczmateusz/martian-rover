@@ -18,8 +18,14 @@ HPALETTE hPalette = NULL;
 static LPCTSTR lpszAppName = "Martian rover";
 static HINSTANCE hInstance;
 
+//scoreboard file
+fstream scoreboard;
+list<int> sbList;
+
+int properSB[5] = { 0, 0, 0, 0, 0 };
+
 //create audio engine
-irrklang::ISoundEngine* getPoint = irrklang::createIrrKlangDevice();
+irrklang::ISoundEngine* playSound = irrklang::createIrrKlangDevice();
 
 // Rotation amounts - camera
 static GLfloat cameraXrot = 0.0f;
@@ -88,6 +94,33 @@ static GLfloat zoom;
 
 static GLsizei lastHeight;
 static GLsizei lastWidth;
+
+void ogarnijScoreboard()
+{
+	if (scoreboard.good())
+	{
+		string napis;
+		while (!scoreboard.eof())
+		{
+			getline(scoreboard, napis);
+			if (napis.length() > 0)
+			{
+				sbList.push_back(stoi(napis));
+			}
+		}
+		scoreboard.close();
+		sbList.sort();
+		sbList.reverse();
+		int i = 0;
+		for (list<int>::iterator it = sbList.begin(); it != sbList.end(); it++)
+		{
+			properSB[i] = *it;
+			++i;
+			if (i > 4)
+				break;
+		}
+	}
+}
 
 GLfloat distanceCalculate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
 {
@@ -339,24 +372,34 @@ void RenderScene(void)
 
 	if (collision[2])
 	{
-		getPoint->play2D("Audio/bell.wav");
+		playSound->play2D("Audio/bell.wav");
 		++points;
-		checkpoint.center[0] = (rand() % 1000) - 500.0f;
-		checkpoint.center[1] = (rand() % 1000) - 500.0f;
+		checkpointLocation[0] = checkpoint.center[0] = (rand() % 700) - 350.0f;
+		checkpointLocation[1] = checkpoint.center[1] = (rand() % 700) - 350.0f;
+		batteryLife = batteryLife < 70.0f ? batteryLife + 30.0f : 100.0f;
 	}
 
-	batteryLife -= 0.02f;
-	if (batteryLife < 0.0f)
+	if (velocity < -0.4f || velocity > 0.4f)
 	{
-		batteryLife = 0.0f;
-		velocity = 0.0f;
-		velocityL = 0.0f;
-		velocityR = 0.0f;
+		batteryLife -= 0.3f;
+		if (batteryLife < 0.0f)
+		{
+			batteryLife = 0.0f;
+			velocity = 0.0f;
+			velocityL = 0.0f;
+			velocityR = 0.0f;
+			playSound->play2D("Audio/gameover.wav");
+			fstream zapiszWynik;
+			zapiszWynik.open("scoreboard.txt", ios::app);
+			//zapiszWynik.write(to_string(points));
+			zapiszWynik << points << endl;
+			zapiszWynik.close();
+		}
 	}
 
 	if (collision[0] || collision[1])
 	{
-		getPoint->play2D("Audio/explosion.wav");
+		playSound->play2D("Audio/explosion.wav");
 		velocityL = -0.5f*velocityL;
 		velocityR = -0.5f*velocityR;
 		velocity = -0.5f*velocity;
@@ -385,26 +428,42 @@ void RenderScene(void)
 	TwBar *bar;
 	bar = TwNewBar("Parametry");
 
-	TwWindowSize(800, 800);
+	int barsize[] = { 200,500 };
+
+	TwWindowSize(800,700);
+	TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2, barsize);
 	TwAddButton(bar, "Martian rover", NULL, NULL, "");
 	TwAddVarRO(bar, "Velocity", TW_TYPE_FLOAT, &velocity, "precision=1");
 	TwAddVarRO(bar, "Velocity L", TW_TYPE_FLOAT, &velocityL, "precision=1");
 	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "precision=1");
 	TwAddSeparator(bar, "Battery life", "battery");
 
-	TwAddVarRO(bar, "Battery life %", TW_TYPE_FLOAT, &batteryLife, "precision=0");
-	TwAddSeparator(bar, "Position", "pos");
+	//TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
+	//TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
+	//TwAddSeparator(bar, NULL, "");
 
 	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &posX, "precision=0");
 	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &posY, "precision=0");
 	TwAddSeparator(bar, NULL, "");
 
-	TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
-	TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
-	TwAddVarRW(bar, "obstacle 3", TW_TYPE_BOOLCPP, &collision[2], "");
+	TwAddVarRO(bar, "checkpoint X", TW_TYPE_FLOAT, &checkpointLocation[0], "precision=0");
+	TwAddVarRO(bar, "checkpoint Y", TW_TYPE_FLOAT, &checkpointLocation[1], "precision=0");
 	TwAddSeparator(bar, NULL, "");
 
+	TwAddVarRO(bar, "Rocket fuel %", TW_TYPE_FLOAT, &batteryLife, "precision=0");
+	TwAddSeparator(bar, "Position", "pos");
+
 	TwAddVarRO(bar, "points", TW_TYPE_INT32, &points, "");
+	TwAddSeparator(bar, NULL, "");
+
+	//TwAddButton(bar, "Scoreboard", NULL, NULL, "");
+	TwAddVarRO(bar, "1:", TW_TYPE_INT32, &properSB[0], "");
+	TwAddVarRO(bar, "2:", TW_TYPE_INT32, &properSB[1], "");
+	TwAddVarRO(bar, "3:", TW_TYPE_INT32, &properSB[2], "");
+	TwAddVarRO(bar, "4:", TW_TYPE_INT32, &properSB[3], "");
+	TwAddVarRO(bar, "5:", TW_TYPE_INT32, &properSB[4], "");
+
+	
 
 	TwDraw();
 
@@ -607,6 +666,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		wglMakeCurrent(hDC, hRC);
 		SetupRC();
 
+		scoreboard.open("scoreboard.txt", std::ios::in);
+		ogarnijScoreboard();
+		playSound->play2D("Audio/startup.wav");
 		srand(int(time(NULL)));
 		dust = LoadTexture("Textures/dust.png", 1);
 		banana = LoadTexture("Textures/banana.png", 1);
@@ -619,7 +681,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
-		getPoint->drop();
+		playSound->drop();
 		wglMakeCurrent(hDC, NULL);
 		wglDeleteContext(hRC);
 		if (hPalette != NULL)
@@ -679,6 +741,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_NUMPAD7)
 			cameraZrot += 5.0f;
+		
+		if (wParam == VK_NUMPAD5)
+		{
+			cameraXrot = 0.0f;
+			cameraYrot = 0.0f;
+			cameraZrot = 0.0f;
+		}
 
 		if (wParam == VK_SUBTRACT)
 			zoom += 20.0f;
@@ -693,7 +762,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'W')
 		{
-			if (velocity < 5)
+			if (velocity < 5 && batteryLife > 0.0f)
 			{
 				velocityL += 4 * const_velocity;
 				velocityR += 4 * const_velocity;
@@ -701,7 +770,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
-		if (wParam == 'S')
+		if (wParam == 'S' && batteryLife > 0.0f)
 		{
 			if (velocity > -5)
 			{
@@ -711,7 +780,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
-		if (wParam == 'A')
+		if (wParam == 'A' && batteryLife > 0.0f)
 		{
 			if (velocity >= 0 && velocity < 5)
 			{
@@ -733,7 +802,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
-		if (wParam == 'D')
+		if (wParam == 'D' && batteryLife > 0.0f)
 		{
 			if (velocity >= 0 && velocity < 5)
 			{
@@ -771,19 +840,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			velocityUpdate = 1;
 		}
 
-		if (wParam == VK_UP)
-		{
-			velocityL += const_velocity;
-			velocityR += const_velocity;
-			velocityUpdate = 1;
-		}
-
-		if (wParam == VK_DOWN)
-		{
-			velocityL -= const_velocity;
-			velocityR -= const_velocity;
-			velocityUpdate = 1;
-		}
 		InvalidateRect(hWnd, NULL, FALSE);
 	}
 	break;
