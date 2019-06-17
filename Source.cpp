@@ -621,7 +621,7 @@ int APIENTRY WinMain(HINSTANCE       hInst,
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 
 		// Window position and size
-		-1000, 50,
+		50, 50,
 		800, 800,
 		NULL,
 		NULL,
@@ -762,7 +762,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'W')
 		{
-			if (velocity < 5 && batteryLife > 0.0f)
+			if (velocity < 10 && batteryLife > 0.0f)
 			{
 				velocityL += 4 * const_velocity;
 				velocityR += 4 * const_velocity;
@@ -772,7 +772,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'S' && batteryLife > 0.0f)
 		{
-			if (velocity > -5)
+			if (velocity > -10)
 			{
 				velocityL -= 4 * const_velocity;
 				velocityR -= 4 * const_velocity;
@@ -782,7 +782,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'A' && batteryLife > 0.0f)
 		{
-			if (velocity >= 0 && velocity < 5)
+			if (velocity >= 0 && velocity < 10)
 			{
 				velocityL += const_velocity;
 				velocityUpdate = 1;
@@ -791,7 +791,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					engineRot -= engineRotSpeed;
 				}
 			}
-			else if (velocity > -5 && velocity <= 0)
+			else if (velocity > -10 && velocity <= 0)
 			{
 				velocityL -= const_velocity;
 				velocityUpdate = 1;
@@ -804,7 +804,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'D' && batteryLife > 0.0f)
 		{
-			if (velocity >= 0 && velocity < 5)
+			if (velocity >= 0 && velocity < 10)
 			{
 				velocityR += const_velocity;
 				velocityUpdate = 1;
@@ -813,7 +813,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					engineRot += engineRotSpeed;
 				}
 			}
-			else if (velocity > -5 && velocity <= 0)
+			else if (velocity > -10 && velocity <= 0)
 			{
 				velocityR -= const_velocity;
 				velocityUpdate = 1;
