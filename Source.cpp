@@ -18,16 +18,16 @@ HPALETTE hPalette = NULL;
 static LPCTSTR lpszAppName = "Martian rover";
 static HINSTANCE hInstance;
 
-//scoreboard file
-fstream scoreboard;
-list<int> sbList;
+//scoreboardFile file
+fstream scoreboardFile;
+list<int> scoreboardList;
 
-int properSB[5] = { 0, 0, 0, 0, 0 };
+int scoreboardTable[5] = { 0, 0, 0, 0, 0 };
 
 //create audio engine
 irrklang::ISoundEngine* playSound = irrklang::createIrrKlangDevice();
 
-// Rotation amounts - camera
+//camera
 static GLfloat cameraXrot = 0.0f;
 static GLfloat cameraYrot = 0.0f;
 static GLfloat cameraZrot = 0.0f;
@@ -41,32 +41,40 @@ static GLfloat roverRadius = 40.0f;
 vector<float> roverPos;
 
 
-GLfloat obs1mid[3] = { -180, -175, 40 }; // x, y, z
+GLfloat obs1mid[3] = { -180, -175, 100 }; // x, y, z
 GLfloat obs1radius = 25;
 
-GLfloat obs2mid[3] = { 99, 308, 40 }; // x, y, z
+GLfloat obs2mid[3] = { 99, 308, 100 }; // x, y, z
 GLfloat obs2radius = 46;
 
 bool collision[3] = { 0, 0, 0 };
 
+// rover global position
 static GLfloat posX = 0.0f;
 static GLfloat posY = 0.0f;
 static GLfloat posZ = 0.0f;
 
-GLfloat rovmid[3] = { posX + 35, posY + 35, 40 }; // x, y, z
+GLfloat rovmid[3] = { posX + 35, posY + 35, 100 }; // x, y, z
 
-//Cylinder obsRange(colour, rovmid, roverRadius, 40, 0, 1);
+GLfloat colour[3] = { 1,0,0};
+
+Cylinder rovRange(colour, rovmid, roverRadius, 100, 0, 1);
+Cylinder obs1Range(colour, obs1mid, obs1radius, 100, 0, 1);
+Cylinder obs2Range(colour, obs2mid, obs2radius, 100, 0, 1);
+
+
 
 GLfloat batteryLife = 100.0;
 
+//zmienne przechowujace referencje do tekstur
 unsigned int dust = 0;
 unsigned int banana = 0;
 unsigned int rock = 0;
 unsigned int smok = 0;
 
 //new ones
-static GLfloat rotAngle = 0.0f;
-static GLfloat rotAngleDeg = 0.0f;
+static GLfloat roverRotationAngle = 0.0f;
+static GLfloat roverRotationAngleDeg = 0.0f;
 static GLfloat swingRadius = 0.0f;
 
 static GLfloat const_velocity = 0.7f;
@@ -82,9 +90,9 @@ Terrain terrain;
 Obstacle ob1(-6, -6, 0.15f, 30);
 Obstacle ob2(2, 6, 0.6f, 50);
 
-GLfloat colour[3] = { 218/(float)255, 185/ (float)255, 35/(float)255 };
+GLfloat colour2[3] = { 218/(float)255, 185/ (float)255, 35/(float)255 };
 GLfloat checkpointLocation[3] = {40, 160, 70 };
-Cone checkpoint(colour, checkpointLocation, 15, 40);
+Cone checkpoint(colour2, checkpointLocation, 15, 40);
 
 static bool counterXD = true;
 
@@ -97,24 +105,24 @@ static GLsizei lastWidth;
 
 void ogarnijScoreboard()
 {
-	if (scoreboard.good())
+	if (scoreboardFile.good())
 	{
 		string napis;
-		while (!scoreboard.eof())
+		while (!scoreboardFile.eof())
 		{
-			getline(scoreboard, napis);
+			getline(scoreboardFile, napis);
 			if (napis.length() > 0)
 			{
-				sbList.push_back(stoi(napis));
+				scoreboardList.push_back(stoi(napis));
 			}
 		}
-		scoreboard.close();
-		sbList.sort();
-		sbList.reverse();
+		scoreboardFile.close();
+		scoreboardList.sort();
+		scoreboardList.reverse();
 		int i = 0;
-		for (list<int>::iterator it = sbList.begin(); it != sbList.end(); it++)
+		for (list<int>::iterator it = scoreboardList.begin(); it != scoreboardList.end(); it++)
 		{
-			properSB[i] = *it;
+			scoreboardTable[i] = *it;
 			++i;
 			if (i > 4)
 				break;
@@ -261,11 +269,18 @@ void RenderScene(void)
 
 	glPushMatrix();
 
+	// obracanie kamery klawiatura numeryczna
 	glRotatef(cameraXrot, 1.0f, 0.0f, 0.0f);
 	glRotatef(cameraYrot, 0.0f, 1.0f, 0.0f);
 	glRotatef(cameraZrot, 0.0f, 0.0f, 1.0f);
 	glRotatef(zoom, 0, 0, 0);
 
+	//Sposób na odróźnienie "przedniej" i "tylniej" ściany wielokąta:
+	//glPolygonMode(GL_BACK,GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+
+	//pobranie aktualnej pozycji lazika
 	roverPos = rover.getPos();
 
 	if (velocityUpdate)
@@ -277,15 +292,11 @@ void RenderScene(void)
 	if (velocityL != velocityR)
 	{
 		if (swingRadius = 50.0f*(velocityL + velocityR) / (2 * (velocityL - velocityR)))
-			rotAngle += GLfloat(atan2(swingRadius, 0) - atan2(swingRadius, velocity));
+			roverRotationAngle += GLfloat(atan2(swingRadius, 0) - atan2(swingRadius, velocity));
 	}
 
-	//Sposób na odróźnienie "przedniej" i "tylniej" ściany wielokąta:
-	//glPolygonMode(GL_BACK,GL_LINE);
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-
-	posX += velocity * sin(-rotAngle); // Obliczanie nowej pozycji w osi x; X = x_0 + v*t; gdzie t = sin(-a);
-	posY += velocity * cos(rotAngle); // Obliczanie nowej pozycji w osi y; Y = y_0 + v*t; gdzie t = cos(a);
+	posX += velocity * sin(-roverRotationAngle);
+	posY += velocity * cos(roverRotationAngle);
 
 	gluLookAt(
 		posX + 30, // eye X
@@ -343,7 +354,7 @@ void RenderScene(void)
 	}
 
 	glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powrót do pozycji wyjściowej
-	glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
+	glRotatef(GLfloat(roverRotationAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
 	glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
 
 	rover.drawRover(engineRot, 0, 0, 1);
@@ -391,7 +402,6 @@ void RenderScene(void)
 			playSound->play2D("Audio/gameover.wav");
 			fstream zapiszWynik;
 			zapiszWynik.open("scoreboard.txt", ios::app);
-			//zapiszWynik.write(to_string(points));
 			zapiszWynik << points << endl;
 			zapiszWynik.close();
 		}
@@ -405,22 +415,21 @@ void RenderScene(void)
 		velocity = -0.5f*velocity;
 	}
 
-	rotAngleDeg = GLfloat(fmod(rotAngle * 180.0f / GL_PI, 360));
+	roverRotationAngleDeg = GLfloat(fmod(roverRotationAngle * 180.0f / GL_PI, 360));
 
-	grid.drawGrid();
+	//grid.drawGrid();
 	terrain.drawTerrain();
-
-	
-	//glTranslatef(midPointLocation[0], midPointLocation[1], midPointLocation[2]); // powrót do pozycji wyjściowej
-	//glRotatef(GLfloat(rotAngle * 180 / GL_PI), 0.0f, 0.0f, 1.0f); // obrót wokół punktu 0,0 po osi Z
-	//glTranslatef(-midPointLocation[0], -midPointLocation[1], -midPointLocation[2]); // translacja do punktu 0,0
-
-	//checkpoint.drawCone(engineRot, 0, 0, 1);
-	
-
 
 	ob1.drawObstacle();
 	ob2.drawObstacle();
+
+	rovRange.center[0] = posX + 35;
+	rovRange.center[1] = posY + 35;
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//rovRange.drawCylinder(90, 0, 1, 0);
+	//obs1Range.drawCylinder(90, 0, 1, 0);
+	//obs2Range.drawCylinder(90, 0, 1, 0);
 
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -438,10 +447,6 @@ void RenderScene(void)
 	TwAddVarRO(bar, "Velocity R", TW_TYPE_FLOAT, &velocityR, "precision=1");
 	TwAddSeparator(bar, "Battery life", "battery");
 
-	//TwAddVarRW(bar, "obstacle 1", TW_TYPE_BOOLCPP, &collision[0], "");
-	//TwAddVarRW(bar, "obstacle 2", TW_TYPE_BOOLCPP, &collision[1], "");
-	//TwAddSeparator(bar, NULL, "");
-
 	TwAddVarRO(bar, "X", TW_TYPE_FLOAT, &posX, "precision=0");
 	TwAddVarRO(bar, "Y", TW_TYPE_FLOAT, &posY, "precision=0");
 	TwAddSeparator(bar, NULL, "");
@@ -456,12 +461,11 @@ void RenderScene(void)
 	TwAddVarRO(bar, "points", TW_TYPE_INT32, &points, "");
 	TwAddSeparator(bar, NULL, "");
 
-	//TwAddButton(bar, "Scoreboard", NULL, NULL, "");
-	TwAddVarRO(bar, "1:", TW_TYPE_INT32, &properSB[0], "");
-	TwAddVarRO(bar, "2:", TW_TYPE_INT32, &properSB[1], "");
-	TwAddVarRO(bar, "3:", TW_TYPE_INT32, &properSB[2], "");
-	TwAddVarRO(bar, "4:", TW_TYPE_INT32, &properSB[3], "");
-	TwAddVarRO(bar, "5:", TW_TYPE_INT32, &properSB[4], "");
+	TwAddVarRO(bar, "1:", TW_TYPE_INT32, &scoreboardTable[0], "");
+	TwAddVarRO(bar, "2:", TW_TYPE_INT32, &scoreboardTable[1], "");
+	TwAddVarRO(bar, "3:", TW_TYPE_INT32, &scoreboardTable[2], "");
+	TwAddVarRO(bar, "4:", TW_TYPE_INT32, &scoreboardTable[3], "");
+	TwAddVarRO(bar, "5:", TW_TYPE_INT32, &scoreboardTable[4], "");
 
 	
 
@@ -621,7 +625,7 @@ int APIENTRY WinMain(HINSTANCE       hInst,
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 
 		// Window position and size
-		-1000, 50,
+		50, 50,
 		800, 800,
 		NULL,
 		NULL,
@@ -666,7 +670,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		wglMakeCurrent(hDC, hRC);
 		SetupRC();
 
-		scoreboard.open("scoreboard.txt", std::ios::in);
+		scoreboardFile.open("scoreboard.txt", std::ios::in);
 		ogarnijScoreboard();
 		playSound->play2D("Audio/startup.wav");
 		srand(int(time(NULL)));
@@ -762,7 +766,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'W')
 		{
-			if (velocity < 5 && batteryLife > 0.0f)
+			if (velocity < 10 && batteryLife > 0.0f)
 			{
 				velocityL += 4 * const_velocity;
 				velocityR += 4 * const_velocity;
@@ -772,7 +776,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'S' && batteryLife > 0.0f)
 		{
-			if (velocity > -5)
+			if (velocity > -10)
 			{
 				velocityL -= 4 * const_velocity;
 				velocityR -= 4 * const_velocity;
@@ -782,7 +786,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'A' && batteryLife > 0.0f)
 		{
-			if (velocity >= 0 && velocity < 5)
+			if (velocity >= 0 && velocity < 10)
 			{
 				velocityL += const_velocity;
 				velocityUpdate = 1;
@@ -791,7 +795,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					engineRot -= engineRotSpeed;
 				}
 			}
-			else if (velocity > -5 && velocity <= 0)
+			else if (velocity > -10 && velocity <= 0)
 			{
 				velocityL -= const_velocity;
 				velocityUpdate = 1;
@@ -804,7 +808,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == 'D' && batteryLife > 0.0f)
 		{
-			if (velocity >= 0 && velocity < 5)
+			if (velocity >= 0 && velocity < 10)
 			{
 				velocityR += const_velocity;
 				velocityUpdate = 1;
@@ -813,7 +817,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					engineRot += engineRotSpeed;
 				}
 			}
-			else if (velocity > -5 && velocity <= 0)
+			else if (velocity > -10 && velocity <= 0)
 			{
 				velocityR -= const_velocity;
 				velocityUpdate = 1;

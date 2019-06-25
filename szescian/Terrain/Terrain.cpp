@@ -21,6 +21,7 @@ void Terrain::drawTerrain()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	if (floor.LoadFile("mars.obj"))
 	{
