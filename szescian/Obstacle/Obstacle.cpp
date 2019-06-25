@@ -30,6 +30,7 @@ void Obstacle::drawObstacle()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	if (floor.LoadFile("malphite.obj"))

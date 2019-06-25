@@ -91,16 +91,8 @@ void Platform::drawPlatform(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	RightBack.drawCuboid(0, 0, 0, 0);
 	LeftBack.drawCuboid(0, 0, 0, 0);
 
-	/*glBegin(GL_LINES);
-	glColor3f(0, 0, 1);
-	glVertex3f(engineCore.center[0], (engineCore.center[2] - 40), engineCore.center[2]);
-	glVertex3f(engineCore.center[0], (engineCore.center[2] - 40), (float)1000);
-	glColor3f(1, 1, 1);
-	glEnd();*/
-
 	glPushMatrix();
 
-	//
 	glTranslatef(engine.center[0], (engine.center[2]-20), engine.center[2]); // powrot do pozycji wyjsciowej
 	glRotatef(rot, xdg, ydg, zdg); // obrot wokol punktu 0,0 po osi Z
 	glTranslatef(-engine.center[0], -(engine.center[2]-20), -engine.center[2]);

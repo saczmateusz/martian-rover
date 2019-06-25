@@ -30,6 +30,7 @@ void Cuboid::drawCuboid(GLfloat rot, GLfloat xdg, GLfloat ydg, GLfloat zdg)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	GLfloat e[3] = { a[0], a[1], a[2] + height };
 	GLfloat f[3] = { b[0], b[1], b[2] + height };
